@@ -193,6 +193,9 @@
   .balang .skor small{font-size:24px;color:var(--teks-lembut)}
   .bintang-baris{font-size:40px;letter-spacing:4px;margin-top:8px}
   .tamat .ucap{font-weight:800;color:var(--teks-lembut);font-size:17px;margin:4px 0 22px}
+  .terbaik{display:inline-block;background:#fff;border-radius:14px;padding:8px 16px;margin:6px auto 2px;
+    font-family:'Fredoka';font-weight:600;font-size:15px;color:var(--amber-gelap);box-shadow:var(--bayang)}
+  .terbaik .baharu{color:var(--hijau);margin-left:6px}
 
   .nota{background:rgba(255,255,255,.6);border-radius:18px;padding:14px 16px;margin-top:18px;font-size:13.5px;
     color:var(--teks-lembut);font-weight:700;line-height:1.5}
@@ -225,7 +228,7 @@
 
     <div class="menu-aksi">
       <button class="btn btn-teal" onclick="bukaPilih()">📚 Pilih Latihan</button>
-      <button class="btn btn-hijau" onclick="mulaModul()">📋 Ulangkaji Modul Selangkah</button>
+      <button class="btn btn-hijau" onclick="mulaModul()">📋 Ulangkaji Modul Selangkah (10 set rawak)</button>
       <button class="btn btn-amber" onclick="latihanPantas()">⚡ Latihan Pantas (Campur)</button>
     </div>
     <div class="tetapan-baris">
@@ -233,8 +236,7 @@
     </div>
 
     <div class="nota">
-      <b>👋 Untuk ibu &amp; ayah:</b> <b>Ulangkaji Modul Selangkah</b> ialah satu set ujian 6 bahagian mengikut tajuk ulang kaji:
-      Al-Quran (Mad Asli), Akidah (Rukun Islam), Ibadah (bilangan rakaat &amp; perlakuan solat), Sirah (biodata Nabi ﷺ) dan Adab (kebersihan diri).
+      <b>👋 Untuk ibu &amp; ayah:</b> <b>Ulangkaji Modul Selangkah</b> mempunyai <b>10 set soalan</b> yang dipilih secara <b>rawak</b> setiap kali — setiap set merangkumi 6 bahagian: Al-Quran (Mad Asli), Akidah (Rukun Islam), Ibadah (bilangan rakaat &amp; perlakuan solat), Sirah (biodata Nabi ﷺ) dan Adab (kebersihan diri).
       <b>Pilih Latihan</b> pula untuk pilih ikut bidang/unit; hidupkan <b>Pilih Banyak</b> untuk gabungkan beberapa latihan.
       Semua disemak automatik — anak hanya perlu <b>tekan</b>, tiada perlu menaip.
     </div>
@@ -255,6 +257,7 @@
     <div class="top-latih">
       <button class="balik" onclick="tanyaBerhenti()">⬅️</button>
       <div class="progres"><div id="progresBar"></div></div>
+      <button class="balik" id="btnBunyiLatih" onclick="togolBunyi()" title="Hidup/matikan bunyi">🔊</button>
       <div class="bintang-kira"><span>⭐</span><span id="kiraBintang">0</span></div>
     </div>
     <div class="kad">
@@ -278,6 +281,7 @@
       <div class="skor"><span id="skorBetul">0</span><small>/<span id="skorJumlah">0</span></small></div>
       <div class="bintang-baris" id="bintangBaris"></div>
     </div>
+    <div class="terbaik" id="hasilTerbaik" style="display:none"></div>
     <p class="ucap" id="ucapTamat"></p>
     <div class="btn-row">
       <button class="btn btn-amber" onclick="ulangLatihan()">🔁 Cuba Lagi</button>
@@ -523,46 +527,363 @@ const DATA = [
    ]},
 ];
 
-/* ===================== MODUL SELANGKAH — PENDIDIKAN ISLAM ===================== */
-const MODUL = [
- { bahagian:'Bahagian 1 · Al-Quran: Bacaan Mad Asli', soalan:[
-   {kind:'teks', teks:'Berapakah bilangan huruf mad asli?', pilihan:['3','2','4'], jwp:0},
-   {kind:'teks', teks:'Yang manakah huruf mad ALIF?', pilihan:['ا','ب','ك'], jwp:0},
-   {kind:'teks', teks:'Yang manakah huruf mad WAU?', pilihan:['و','م','ن'], jwp:0},
-   {kind:'teks', teks:'Yang manakah huruf mad YA?', pilihan:['ي','د','ر'], jwp:0},
-   {kind:'teks', teks:'Bacaan mad dibaca dengan?', pilihan:['Panjang','Pendek'], jwp:0},
- ]},
- { bahagian:'Bahagian 2 · Akidah: Rukun Islam', soalan:[
-   {kind:'teks', teks:'Berapakah bilangan Rukun Islam?', pilihan:['5','4','6'], jwp:0},
-   {kind:'teks', teks:'Rukun Islam yang PERTAMA ialah?', pilihan:['Mengucap dua kalimah syahadah','Mendirikan solat','Menunaikan haji'], jwp:0},
-   {kind:'teks', teks:'Kita berpuasa pada bulan?', pilihan:['Ramadan','Syawal','Rejab'], jwp:0},
-   {kind:'susun', teks:'Susun ayat ini:', kata:['Rukun','Islam','ada','lima']},
- ]},
- { bahagian:'Bahagian 3 · Ibadah: Bilangan Rakaat Solat', soalan:[
-   {kind:'padan', pairs:[{gambar:'🌅',j:'Subuh = 2'},{gambar:'🌇',j:'Maghrib = 3'},{gambar:'🌞',j:'Zohor = 4'}]},
-   {kind:'teks', teks:'Solat Isyak berapa rakaat?', pilihan:['4','2','3'], jwp:0},
-   {kind:'teks', teks:'Solat yang 3 rakaat ialah?', pilihan:['Maghrib','Subuh','Asar'], jwp:0},
- ]},
- { bahagian:'Bahagian 4 · Ibadah: Perlakuan dalam Solat', soalan:[
-   {kind:'teks', teks:'Perbuatan untuk MEMULAKAN solat ialah?', pilihan:['Takbiratul Ihram','Rukuk','Sujud'], jwp:0},
-   {kind:'teks', teks:'Selepas takbir, kita membaca surah?', pilihan:['Al-Fatihah','Yasin'], jwp:0},
-   {kind:'teks', teks:'Meletakkan dahi ke tempat sujud ialah?', pilihan:['Sujud','Rukuk'], jwp:0},
-   {kind:'teks', teks:'Solat diakhiri dengan memberi?', pilihan:['Salam','Takbir'], jwp:0},
- ]},
- { bahagian:'Bahagian 5 · Sirah: Biodata Nabi Muhammad ﷺ', soalan:[
-   {kind:'teks', teks:'Apakah nama Nabi kita?', pilihan:['Muhammad bin Abdullah','Nabi Musa','Nabi Isa'], jwp:0},
-   {kind:'teks', teks:'Pada tarikh berapa baginda lahir?', pilihan:['12 Rabiulawal','1 Rabiulawal','10 Muharam'], jwp:0},
-   {kind:'teks', teks:'Nabi Muhammad ﷺ lahir di?', pilihan:['Makkah','Madinah','Baghdad'], jwp:0},
-   {kind:'teks', teks:'Apakah bangsa Nabi Muhammad ﷺ?', pilihan:['Arab Quraisy','Melayu','Parsi'], jwp:0},
-   {kind:'teks', teks:'Apakah gelaran Nabi Muhammad ﷺ?', pilihan:['Al-Amin','Al-Faruq'], jwp:0},
- ]},
- { bahagian:'Bahagian 6 · Adab: Kebersihan Diri', soalan:[
-   {kind:'teks', teks:'Menjaga kebersihan diri ialah menjaga tubuh badan dan?', pilihan:['Pakaian','Mainan'], jwp:0},
-   {kind:'em', em:'🪥', teks:'Yang manakah amalan kebersihan diri?', pilihan:['Menggosok gigi','Bermain lumpur'], jwp:0},
-   {kind:'teks', teks:'Allah ____ orang yang membersihkan diri.', pilihan:['Mengasihi','Memarahi'], jwp:0},
-   {kind:'em', em:'💅', teks:'Memotong kuku menjaga kebersihan diri.', pilihan:['Betul','Salah'], jwp:0},
- ]},
+/* ===================== MODUL SELANGKAH — 5 SET RAWAK =====================
+   Setiap set: 6 bahagian (Al-Quran · Akidah · Ibadah rakaat · Perlakuan solat
+   · Sirah · Adab). Satu set dipilih secara rawak setiap kali Modul dimulakan.
+   ========================================================================== */
+const MODUL_SETS = [
+ /* ---------------- SET 1 ---------------- */
+ [
+  { bahagian:'Al-Quran: Bacaan Mad Asli', soalan:[
+    {kind:'teks', teks:'Berapakah bilangan huruf mad asli?', pilihan:['3','2','4'], jwp:0},
+    {kind:'teks', teks:'Yang manakah huruf mad ALIF?', pilihan:['ا','ب','ت'], jwp:0},
+    {kind:'teks', teks:'Bacaan mad dibaca dengan?', pilihan:['Panjang','Pendek'], jwp:0},
+  ]},
+  { bahagian:'Akidah: Rukun Islam', soalan:[
+    {kind:'teks', teks:'Berapakah bilangan Rukun Islam?', pilihan:['5','4','6'], jwp:0},
+    {kind:'teks', teks:'Rukun Islam yang PERTAMA ialah?', pilihan:['Mengucap dua kalimah syahadah','Mendirikan solat','Menunaikan haji'], jwp:0},
+    {kind:'susun', teks:'Susun ayat ini:', kata:['Rukun','Islam','ada','lima']},
+  ]},
+  { bahagian:'Ibadah: Bilangan Rakaat Solat', soalan:[
+    {kind:'padan', pairs:[{gambar:'🌅',j:'Subuh = 2'},{gambar:'🌇',j:'Maghrib = 3'},{gambar:'🌞',j:'Zohor = 4'}]},
+    {kind:'teks', teks:'Solat Isyak berapa rakaat?', pilihan:['4','2','3'], jwp:0},
+    {kind:'teks', teks:'Solat yang 3 rakaat ialah?', pilihan:['Maghrib','Subuh','Asar'], jwp:0},
+  ]},
+  { bahagian:'Ibadah: Perlakuan dalam Solat', soalan:[
+    {kind:'teks', teks:'Perbuatan untuk MEMULAKAN solat ialah?', pilihan:['Takbiratul Ihram','Rukuk','Sujud'], jwp:0},
+    {kind:'teks', teks:'Selepas takbir, kita membaca surah?', pilihan:['Al-Fatihah','Yasin'], jwp:0},
+    {kind:'teks', teks:'Solat diakhiri dengan memberi?', pilihan:['Salam','Takbir'], jwp:0},
+  ]},
+  { bahagian:'Sirah: Biodata Nabi Muhammad ﷺ', soalan:[
+    {kind:'teks', teks:'Apakah nama Nabi kita?', pilihan:['Muhammad bin Abdullah','Nabi Musa','Nabi Isa'], jwp:0},
+    {kind:'teks', teks:'Pada tarikh berapa baginda lahir?', pilihan:['12 Rabiulawal','1 Rabiulawal','10 Muharam'], jwp:0},
+    {kind:'teks', teks:'Nabi Muhammad ﷺ lahir di?', pilihan:['Makkah','Madinah','Baghdad'], jwp:0},
+    {kind:'teks', teks:'Apakah gelaran Nabi Muhammad ﷺ?', pilihan:['Al-Amin','Al-Faruq'], jwp:0},
+  ]},
+  { bahagian:'Adab: Kebersihan Diri', soalan:[
+    {kind:'teks', teks:'Menjaga kebersihan diri ialah menjaga tubuh badan dan?', pilihan:['Pakaian','Mainan'], jwp:0},
+    {kind:'em', em:'🪥', teks:'Yang manakah amalan kebersihan diri?', pilihan:['Menggosok gigi','Bermain lumpur'], jwp:0},
+    {kind:'teks', teks:'Allah ____ orang yang membersihkan diri.', pilihan:['Mengasihi','Memarahi'], jwp:0},
+    {kind:'em', em:'💅', teks:'Memotong kuku menjaga kebersihan diri.', pilihan:['Betul','Salah'], jwp:0},
+  ]},
+ ],
+ /* ---------------- SET 2 ---------------- */
+ [
+  { bahagian:'Al-Quran: Bacaan Mad Asli', soalan:[
+    {kind:'teks', teks:'Yang manakah huruf mad WAU?', pilihan:['و','م','ن'], jwp:0},
+    {kind:'teks', teks:'Huruf mad asli ialah alif, wau dan?', pilihan:['ya (ي)','nun (ن)','ba (ب)'], jwp:0},
+    {kind:'teks', teks:'Yang manakah BUKAN huruf mad?', pilihan:['ب','ا','و'], jwp:0},
+  ]},
+  { bahagian:'Akidah: Rukun Islam', soalan:[
+    {kind:'teks', teks:'Rukun Islam yang KEDUA ialah?', pilihan:['Mendirikan solat','Berpuasa','Menunaikan haji'], jwp:0},
+    {kind:'teks', teks:'Kita berpuasa pada bulan?', pilihan:['Ramadan','Syawal','Rejab'], jwp:0},
+    {kind:'susun', teks:'Susun ayat ini:', kata:['Saya','seorang','muslim']},
+  ]},
+  { bahagian:'Ibadah: Bilangan Rakaat Solat', soalan:[
+    {kind:'padan', pairs:[{gambar:'🌃',j:'Isyak = 4'},{gambar:'🌅',j:'Subuh = 2'},{gambar:'🌇',j:'Maghrib = 3'}]},
+    {kind:'teks', teks:'Solat Subuh berapa rakaat?', pilihan:['2','3','4'], jwp:0},
+    {kind:'teks', teks:'Solat Zohor berapa rakaat?', pilihan:['4','2','3'], jwp:0},
+  ]},
+  { bahagian:'Ibadah: Perlakuan dalam Solat', soalan:[
+    {kind:'teks', arab:'اللّٰهُ أَكْبَر', teks:'Lafaz semasa takbiratul ihram ialah?', pilihan:['Allahu Akbar','Assalamualaikum'], jwp:0},
+    {kind:'teks', teks:'Perbuatan membongkok dalam solat ialah?', pilihan:['Rukuk','Sujud'], jwp:0},
+    {kind:'teks', teks:'Rukun solat ada berapa perkara?', pilihan:['13','10','15'], jwp:0},
+  ]},
+  { bahagian:'Sirah: Biodata Nabi Muhammad ﷺ', soalan:[
+    {kind:'teks', teks:'Nabi Muhammad ﷺ lahir pada bulan?', pilihan:['Rabiulawal','Ramadan','Rejab'], jwp:0},
+    {kind:'teks', teks:'Apakah bangsa Nabi Muhammad ﷺ?', pilihan:['Arab Quraisy','Melayu','Parsi'], jwp:0},
+    {kind:'teks', teks:'Siapakah nama AYAH Nabi Muhammad ﷺ?', pilihan:['Abdullah','Abu Talib'], jwp:0},
+    {kind:'teks', teks:'Apakah maksud "Al-Amin"?', pilihan:['Yang dipercayai','Yang kaya'], jwp:0},
+  ]},
+  { bahagian:'Adab: Kebersihan Diri', soalan:[
+    {kind:'em', em:'🧼', teks:'Sebelum makan, kita perlu?', pilihan:['Membasuh tangan','Tidur'], jwp:0},
+    {kind:'em', em:'👕', teks:'Selepas mandi, kita pakai pakaian yang?', pilihan:['Bersih','Kotor'], jwp:0},
+    {kind:'teks', teks:'"Kebersihan itu sebahagian daripada ____."', pilihan:['iman','permainan'], jwp:0},
+    {kind:'teks', teks:'Kita amalkan kebersihan supaya badan?', pilihan:['Sihat','Sakit'], jwp:0},
+  ]},
+ ],
+ /* ---------------- SET 3 ---------------- */
+ [
+  { bahagian:'Al-Quran: Bacaan Mad Asli', soalan:[
+    {kind:'teks', teks:'Yang manakah huruf mad YA?', pilihan:['ي','د','ر'], jwp:0},
+    {kind:'teks', teks:'"Mad" bermaksud bacaan?', pilihan:['Panjang','Pendek','Laju'], jwp:0},
+    {kind:'teks', teks:'Yang manakah huruf mad?', pilihan:['ا','ك','ت'], jwp:0},
+  ]},
+  { bahagian:'Akidah: Rukun Islam', soalan:[
+    {kind:'teks', teks:'Mengeluarkan zakat ialah rukun Islam yang ke?', pilihan:['4','2','3'], jwp:0},
+    {kind:'em', em:'🕋', teks:'Kita menunaikan haji di?', pilihan:['Makkah','Madinah','Mesir'], jwp:0},
+    {kind:'susun', teks:'Susun ayat ini:', kata:['Solat','lima','waktu','sehari']},
+  ]},
+  { bahagian:'Ibadah: Bilangan Rakaat Solat', soalan:[
+    {kind:'padan', pairs:[{k:'2 rakaat',j:'Subuh'},{k:'3 rakaat',j:'Maghrib'},{k:'4 rakaat',j:'Zohor'}]},
+    {kind:'teks', teks:'Solat Maghrib berapa rakaat?', pilihan:['3','2','4'], jwp:0},
+    {kind:'teks', teks:'Solat fardu dalam sehari ada berapa waktu?', pilihan:['5','3','4'], jwp:0},
+  ]},
+  { bahagian:'Ibadah: Perlakuan dalam Solat', soalan:[
+    {kind:'teks', teks:'Meletakkan dahi ke tempat sujud ialah?', pilihan:['Sujud','Rukuk'], jwp:0},
+    {kind:'teks', teks:'Rukun pertama solat ialah?', pilihan:['Berdiri (bagi yang mampu)','Sujud'], jwp:0},
+    {kind:'teks', teks:'Selepas takbiratul ihram, kita?', pilihan:['Membaca al-Fatihah','Terus sujud'], jwp:0},
+  ]},
+  { bahagian:'Sirah: Biodata Nabi Muhammad ﷺ', soalan:[
+    {kind:'teks', teks:'Siapakah nama IBU Nabi Muhammad ﷺ?', pilihan:['Aminah','Khadijah'], jwp:0},
+    {kind:'teks', teks:'Nabi Muhammad ﷺ lahir pada hari?', pilihan:['Isnin','Jumaat','Ahad'], jwp:0},
+    {kind:'teks', teks:'Apakah nama Nabi kita?', pilihan:['Muhammad bin Abdullah','Nabi Nuh','Nabi Yusuf'], jwp:0},
+    {kind:'teks', teks:'Kerana jujur, baginda digelar?', pilihan:['Al-Amin','Pendusta'], jwp:0},
+  ]},
+  { bahagian:'Adab: Kebersihan Diri', soalan:[
+    {kind:'teks', teks:'Yang manakah amalan kebersihan diri?', pilihan:['Mandi setiap hari','Tidak gosok gigi'], jwp:0},
+    {kind:'em', em:'🪥', teks:'Kita menggosok gigi supaya gigi?', pilihan:['Bersih','Rosak'], jwp:0},
+    {kind:'teks', teks:'Memotong kuku yang panjang adalah amalan?', pilihan:['Baik (bersih)','Buruk'], jwp:0},
+    {kind:'teks', teks:'Pakaian yang kotor patut kita?', pilihan:['Basuh','Pakai semula'], jwp:0},
+  ]},
+ ],
+ /* ---------------- SET 4 ---------------- */
+ [
+  { bahagian:'Al-Quran: Bacaan Mad Asli', soalan:[
+    {kind:'teks', teks:'Berapakah bilangan huruf mad asli?', pilihan:['3','5','2'], jwp:0},
+    {kind:'teks', teks:'Yang manakah huruf mad ALIF?', pilihan:['ا','ن','د'], jwp:0},
+    {kind:'teks', teks:'Yang manakah huruf mad WAU?', pilihan:['و','ت','ك'], jwp:0},
+  ]},
+  { bahagian:'Akidah: Rukun Islam', soalan:[
+    {kind:'teks', teks:'Rukun Islam yang PERTAMA ialah?', pilihan:['Mengucap dua kalimah syahadah','Berpuasa','Mengeluarkan zakat'], jwp:0},
+    {kind:'teks', teks:'Berpuasa di bulan Ramadan ialah rukun Islam yang ke?', pilihan:['3','1','5'], jwp:0},
+    {kind:'susun', teks:'Susun ayat ini:', kata:['Berpuasa','pada','bulan','Ramadan']},
+  ]},
+  { bahagian:'Ibadah: Bilangan Rakaat Solat', soalan:[
+    {kind:'padan', pairs:[{gambar:'🌇',j:'Maghrib = 3'},{gambar:'🌅',j:'Subuh = 2'},{gambar:'🌞',j:'Zohor = 4'}]},
+    {kind:'teks', teks:'Solat Asar berapa rakaat?', pilihan:['4','2','3'], jwp:0},
+    {kind:'teks', teks:'Solat yang 2 rakaat ialah?', pilihan:['Subuh','Maghrib','Isyak'], jwp:0},
+  ]},
+  { bahagian:'Ibadah: Perlakuan dalam Solat', soalan:[
+    {kind:'teks', teks:'Solat diakhiri dengan memberi?', pilihan:['Salam','Takbir'], jwp:0},
+    {kind:'teks', teks:'Bangun semula selepas rukuk dipanggil?', pilihan:['Iktidal','Sujud'], jwp:0},
+    {kind:'teks', teks:'Surah al-Fatihah dibaca semasa?', pilihan:['Berdiri','Sujud'], jwp:0},
+  ]},
+  { bahagian:'Sirah: Biodata Nabi Muhammad ﷺ', soalan:[
+    {kind:'teks', teks:'Nabi Muhammad ﷺ lahir di kota?', pilihan:['Makkah','Madinah','Taif'], jwp:0},
+    {kind:'teks', teks:'Siapakah nama DATUK Nabi Muhammad ﷺ?', pilihan:['Abdul Muttalib','Abu Bakar'], jwp:0},
+    {kind:'teks', teks:'Apakah gelaran Nabi Muhammad ﷺ?', pilihan:['Al-Amin','Al-Kazzab'], jwp:0},
+    {kind:'teks', teks:'"Siddiq" bermaksud?', pilihan:['Benar / jujur','Bohong'], jwp:0},
+  ]},
+  { bahagian:'Adab: Kebersihan Diri', soalan:[
+    {kind:'teks', teks:'Menjaga kebersihan diri ialah menjaga tubuh badan dan?', pilihan:['Pakaian','Permainan'], jwp:0},
+    {kind:'em', em:'🚿', teks:'Untuk membersihkan badan, kita?', pilihan:['Mandi','Berlari'], jwp:0},
+    {kind:'teks', teks:'Allah ____ orang yang bersih.', pilihan:['Menyukai','Membenci'], jwp:0},
+    {kind:'em', em:'🧼', teks:'Selepas bermain, tangan kita patut?', pilihan:['Dibasuh','Dibiarkan kotor'], jwp:0},
+  ]},
+ ],
+ /* ---------------- SET 5 ---------------- */
+ [
+  { bahagian:'Al-Quran: Bacaan Mad Asli', soalan:[
+    {kind:'teks', teks:'Huruf mad asli ialah alif, wau dan?', pilihan:['ya (ي)','mim (م)','lam (ل)'], jwp:0},
+    {kind:'teks', teks:'Bacaan mad dibaca?', pilihan:['Panjang','Pendek'], jwp:0},
+    {kind:'teks', teks:'Yang manakah BUKAN huruf mad?', pilihan:['ت','ا','ي'], jwp:0},
+  ]},
+  { bahagian:'Akidah: Rukun Islam', soalan:[
+    {kind:'teks', teks:'Berapakah bilangan Rukun Islam?', pilihan:['5','6','4'], jwp:0},
+    {kind:'teks', teks:'Menunaikan haji ialah rukun Islam yang ke?', pilihan:['5','2','3'], jwp:0},
+    {kind:'susun', teks:'Susun ayat ini:', kata:['Saya','sayang','Nabi','Muhammad']},
+  ]},
+  { bahagian:'Ibadah: Bilangan Rakaat Solat', soalan:[
+    {kind:'padan', pairs:[{gambar:'🌞',j:'Zohor = 4'},{gambar:'🌇',j:'Maghrib = 3'},{gambar:'🌅',j:'Subuh = 2'}]},
+    {kind:'teks', teks:'Solat Subuh berapa rakaat?', pilihan:['2','4','3'], jwp:0},
+    {kind:'teks', teks:'Solat yang 3 rakaat ialah?', pilihan:['Maghrib','Zohor','Isyak'], jwp:0},
+  ]},
+  { bahagian:'Ibadah: Perlakuan dalam Solat', soalan:[
+    {kind:'teks', teks:'Perbuatan untuk MEMULAKAN solat ialah?', pilihan:['Takbiratul Ihram','Salam','Rukuk'], jwp:0},
+    {kind:'teks', teks:'Meletakkan dahi ke lantai/sejadah ialah?', pilihan:['Sujud','Iktidal'], jwp:0},
+    {kind:'teks', teks:'Rukun solat ada berapa perkara?', pilihan:['13','12','10'], jwp:0},
+  ]},
+  { bahagian:'Sirah: Biodata Nabi Muhammad ﷺ', soalan:[
+    {kind:'teks', teks:'Apakah nama Nabi kita?', pilihan:['Muhammad bin Abdullah','Nabi Daud','Nabi Sulaiman'], jwp:0},
+    {kind:'teks', teks:'Apakah bangsa Nabi Muhammad ﷺ?', pilihan:['Arab Quraisy','India','Cina'], jwp:0},
+    {kind:'teks', teks:'Pada tarikh berapa baginda lahir?', pilihan:['12 Rabiulawal','15 Syaaban','1 Syawal'], jwp:0},
+    {kind:'teks', teks:'Siapakah ibu susuan Nabi Muhammad ﷺ?', pilihan:['Halimatun Saadiah','Aminah'], jwp:0},
+  ]},
+  { bahagian:'Adab: Kebersihan Diri', soalan:[
+    {kind:'teks', teks:'Yang manakah amalan kebersihan diri?', pilihan:['Memakai pakaian bersih','Memakai baju kotor'], jwp:0},
+    {kind:'em', em:'🪥', teks:'Berapa kali sehari elok gosok gigi?', pilihan:['Dua kali','Tidak pernah'], jwp:0},
+    {kind:'teks', teks:'Sebelum makan kita patut?', pilihan:['Membasuh tangan','Bermain'], jwp:0},
+    {kind:'teks', teks:'Badan yang bersih akan berbau?', pilihan:['Harum','Busuk'], jwp:0},
+  ]},
+ ],
+ /* ---------------- SET 6 ---------------- */
+ [
+  { bahagian:'Al-Quran: Bacaan Mad Asli', soalan:[
+    {kind:'teks', teks:'Yang manakah huruf mad ALIF?', pilihan:['ا','ت','ن'], jwp:0},
+    {kind:'teks', teks:'Berapakah bilangan huruf mad asli?', pilihan:['3','4','2'], jwp:0},
+    {kind:'teks', teks:'Bacaan mad dibaca dengan?', pilihan:['Panjang','Pendek'], jwp:0},
+  ]},
+  { bahagian:'Akidah: Rukun Islam', soalan:[
+    {kind:'teks', teks:'Rukun Islam yang KEDUA ialah?', pilihan:['Mendirikan solat','Berpuasa','Menunaikan haji'], jwp:0},
+    {kind:'teks', teks:'Kita berpuasa pada bulan?', pilihan:['Ramadan','Rejab','Syawal'], jwp:0},
+    {kind:'susun', teks:'Susun ayat ini:', kata:['Saya','rajin','solat']},
+  ]},
+  { bahagian:'Ibadah: Bilangan Rakaat Solat', soalan:[
+    {kind:'padan', pairs:[{gambar:'🌅',j:'Subuh = 2'},{gambar:'🌃',j:'Isyak = 4'},{gambar:'🌇',j:'Maghrib = 3'}]},
+    {kind:'teks', teks:'Solat Zohor berapa rakaat?', pilihan:['4','2','3'], jwp:0},
+    {kind:'teks', teks:'Solat yang 2 rakaat ialah?', pilihan:['Subuh','Maghrib','Zohor'], jwp:0},
+  ]},
+  { bahagian:'Ibadah: Perlakuan dalam Solat', soalan:[
+    {kind:'teks', teks:'Perbuatan untuk MEMULAKAN solat ialah?', pilihan:['Takbiratul Ihram','Sujud','Salam'], jwp:0},
+    {kind:'teks', teks:'Perbuatan membongkok dalam solat ialah?', pilihan:['Rukuk','Sujud'], jwp:0},
+    {kind:'teks', teks:'Selepas takbir, kita membaca surah?', pilihan:['Al-Fatihah','Yasin'], jwp:0},
+  ]},
+  { bahagian:'Sirah: Biodata Nabi Muhammad ﷺ', soalan:[
+    {kind:'teks', teks:'Apakah nama Nabi kita?', pilihan:['Muhammad bin Abdullah','Nabi Isa','Nabi Musa'], jwp:0},
+    {kind:'teks', teks:'Nabi Muhammad ﷺ lahir di?', pilihan:['Makkah','Madinah','Taif'], jwp:0},
+    {kind:'teks', teks:'Apakah bangsa Nabi Muhammad ﷺ?', pilihan:['Arab Quraisy','Melayu','Parsi'], jwp:0},
+    {kind:'teks', teks:'Apakah gelaran Nabi Muhammad ﷺ?', pilihan:['Al-Amin','Al-Faruq'], jwp:0},
+  ]},
+  { bahagian:'Adab: Kebersihan Diri', soalan:[
+    {kind:'teks', teks:'Menjaga kebersihan diri ialah menjaga tubuh badan dan?', pilihan:['Pakaian','Mainan'], jwp:0},
+    {kind:'em', em:'🪥', teks:'Yang manakah amalan kebersihan diri?', pilihan:['Menggosok gigi','Bermain lumpur'], jwp:0},
+    {kind:'em', em:'🧼', teks:'Sebelum makan, kita patut?', pilihan:['Membasuh tangan','Tidur'], jwp:0},
+    {kind:'teks', teks:'Allah ____ orang yang bersih.', pilihan:['Mengasihi','Memarahi'], jwp:0},
+  ]},
+ ],
+ /* ---------------- SET 7 ---------------- */
+ [
+  { bahagian:'Al-Quran: Bacaan Mad Asli', soalan:[
+    {kind:'teks', teks:'Yang manakah huruf mad WAU?', pilihan:['و','ن','م'], jwp:0},
+    {kind:'teks', teks:'Huruf mad asli ialah alif, wau dan?', pilihan:['ya (ي)','ba (ب)','lam (ل)'], jwp:0},
+    {kind:'teks', teks:'Yang manakah BUKAN huruf mad?', pilihan:['ت','ا','و'], jwp:0},
+  ]},
+  { bahagian:'Akidah: Rukun Islam', soalan:[
+    {kind:'teks', teks:'Berapakah bilangan Rukun Islam?', pilihan:['5','6','4'], jwp:0},
+    {kind:'teks', teks:'Mengeluarkan zakat ialah rukun Islam yang ke?', pilihan:['4','2','5'], jwp:0},
+    {kind:'susun', teks:'Susun ayat ini:', kata:['Saya','seorang','muslim']},
+  ]},
+  { bahagian:'Ibadah: Bilangan Rakaat Solat', soalan:[
+    {kind:'padan', pairs:[{k:'Subuh',j:'2 rakaat'},{k:'Zohor',j:'4 rakaat'},{k:'Maghrib',j:'3 rakaat'}]},
+    {kind:'teks', teks:'Solat Isyak berapa rakaat?', pilihan:['4','3','2'], jwp:0},
+    {kind:'teks', teks:'Solat yang 3 rakaat ialah?', pilihan:['Maghrib','Asar','Subuh'], jwp:0},
+  ]},
+  { bahagian:'Ibadah: Perlakuan dalam Solat', soalan:[
+    {kind:'teks', teks:'Meletakkan dahi ke tempat sujud ialah?', pilihan:['Sujud','Rukuk'], jwp:0},
+    {kind:'teks', teks:'Solat diakhiri dengan memberi?', pilihan:['Salam','Takbir'], jwp:0},
+    {kind:'teks', teks:'Rukun solat ada berapa perkara?', pilihan:['13','10','12'], jwp:0},
+  ]},
+  { bahagian:'Sirah: Biodata Nabi Muhammad ﷺ', soalan:[
+    {kind:'teks', teks:'Siapakah nama AYAH Nabi Muhammad ﷺ?', pilihan:['Abdullah','Abu Talib'], jwp:0},
+    {kind:'teks', teks:'Siapakah nama IBU Nabi Muhammad ﷺ?', pilihan:['Aminah','Khadijah'], jwp:0},
+    {kind:'teks', teks:'Pada tarikh berapa baginda lahir?', pilihan:['12 Rabiulawal','1 Syawal','10 Muharam'], jwp:0},
+    {kind:'teks', teks:'Apakah maksud "Al-Amin"?', pilihan:['Yang dipercayai','Yang gagah'], jwp:0},
+  ]},
+  { bahagian:'Adab: Kebersihan Diri', soalan:[
+    {kind:'em', em:'🧼', teks:'Sebelum makan, kita perlu?', pilihan:['Membasuh tangan','Tidur'], jwp:0},
+    {kind:'em', em:'👕', teks:'Selepas mandi, kita pakai pakaian yang?', pilihan:['Bersih','Kotor'], jwp:0},
+    {kind:'teks', teks:'"Kebersihan itu sebahagian daripada ____."', pilihan:['iman','permainan'], jwp:0},
+    {kind:'em', em:'💅', teks:'Memotong kuku menjaga kebersihan diri.', pilihan:['Betul','Salah'], jwp:0},
+  ]},
+ ],
+ /* ---------------- SET 8 ---------------- */
+ [
+  { bahagian:'Al-Quran: Bacaan Mad Asli', soalan:[
+    {kind:'teks', teks:'Yang manakah huruf mad YA?', pilihan:['ي','ر','د'], jwp:0},
+    {kind:'teks', teks:'"Mad" bermaksud bacaan?', pilihan:['Panjang','Pendek','Laju'], jwp:0},
+    {kind:'teks', teks:'Yang manakah huruf mad?', pilihan:['و','ك','ت'], jwp:0},
+  ]},
+  { bahagian:'Akidah: Rukun Islam', soalan:[
+    {kind:'teks', teks:'Rukun Islam yang PERTAMA ialah?', pilihan:['Mengucap dua kalimah syahadah','Mendirikan solat','Berpuasa'], jwp:0},
+    {kind:'em', em:'🕋', teks:'Kita menunaikan haji di?', pilihan:['Makkah','Madinah','Mesir'], jwp:0},
+    {kind:'susun', teks:'Susun ayat ini:', kata:['Solat','lima','waktu','sehari']},
+  ]},
+  { bahagian:'Ibadah: Bilangan Rakaat Solat', soalan:[
+    {kind:'padan', pairs:[{gambar:'🌞',j:'Zohor = 4'},{gambar:'🌅',j:'Subuh = 2'},{gambar:'🌇',j:'Maghrib = 3'}]},
+    {kind:'teks', teks:'Solat Maghrib berapa rakaat?', pilihan:['3','4','2'], jwp:0},
+    {kind:'teks', teks:'Solat fardu dalam sehari ada berapa waktu?', pilihan:['5','4','3'], jwp:0},
+  ]},
+  { bahagian:'Ibadah: Perlakuan dalam Solat', soalan:[
+    {kind:'teks', teks:'Bangun semula selepas rukuk dipanggil?', pilihan:['Iktidal','Sujud'], jwp:0},
+    {kind:'teks', teks:'Perbuatan untuk MEMULAKAN solat ialah?', pilihan:['Takbiratul Ihram','Rukuk','Sujud'], jwp:0},
+    {kind:'teks', teks:'Surah al-Fatihah dibaca semasa?', pilihan:['Berdiri','Sujud'], jwp:0},
+  ]},
+  { bahagian:'Sirah: Biodata Nabi Muhammad ﷺ', soalan:[
+    {kind:'teks', teks:'Apakah nama Nabi kita?', pilihan:['Muhammad bin Abdullah','Nabi Nuh','Nabi Yusuf'], jwp:0},
+    {kind:'teks', teks:'Nabi Muhammad ﷺ lahir pada bulan?', pilihan:['Rabiulawal','Ramadan','Rejab'], jwp:0},
+    {kind:'teks', teks:'Siapakah nama DATUK Nabi Muhammad ﷺ?', pilihan:['Abdul Muttalib','Abu Bakar'], jwp:0},
+    {kind:'teks', teks:'Kerana jujur, baginda digelar?', pilihan:['Al-Amin','Pendusta'], jwp:0},
+  ]},
+  { bahagian:'Adab: Kebersihan Diri', soalan:[
+    {kind:'teks', teks:'Yang manakah amalan kebersihan diri?', pilihan:['Mandi setiap hari','Tidak gosok gigi'], jwp:0},
+    {kind:'em', em:'🚿', teks:'Untuk membersihkan badan, kita?', pilihan:['Mandi','Berlari'], jwp:0},
+    {kind:'teks', teks:'Allah ____ orang yang membersihkan diri.', pilihan:['Mengasihi','Memarahi'], jwp:0},
+    {kind:'teks', teks:'Pakaian yang kotor patut kita?', pilihan:['Basuh','Pakai semula'], jwp:0},
+  ]},
+ ],
+ /* ---------------- SET 9 ---------------- */
+ [
+  { bahagian:'Al-Quran: Bacaan Mad Asli', soalan:[
+    {kind:'teks', teks:'Berapakah bilangan huruf mad asli?', pilihan:['3','2','5'], jwp:0},
+    {kind:'teks', teks:'Yang manakah huruf mad ALIF?', pilihan:['ا','د','ن'], jwp:0},
+    {kind:'teks', teks:'Bacaan mad dibaca?', pilihan:['Panjang','Pendek'], jwp:0},
+  ]},
+  { bahagian:'Akidah: Rukun Islam', soalan:[
+    {kind:'teks', teks:'Rukun Islam yang KEDUA ialah?', pilihan:['Mendirikan solat','Mengeluarkan zakat','Berpuasa'], jwp:0},
+    {kind:'teks', teks:'Berpuasa di bulan Ramadan ialah rukun Islam yang ke?', pilihan:['3','1','5'], jwp:0},
+    {kind:'susun', teks:'Susun ayat ini:', kata:['Berpuasa','pada','bulan','Ramadan']},
+  ]},
+  { bahagian:'Ibadah: Bilangan Rakaat Solat', soalan:[
+    {kind:'padan', pairs:[{k:'3 rakaat',j:'Maghrib'},{k:'2 rakaat',j:'Subuh'},{k:'4 rakaat',j:'Asar'}]},
+    {kind:'teks', teks:'Solat Subuh berapa rakaat?', pilihan:['2','3','4'], jwp:0},
+    {kind:'teks', teks:'Solat yang 2 rakaat ialah?', pilihan:['Subuh','Maghrib','Isyak'], jwp:0},
+  ]},
+  { bahagian:'Ibadah: Perlakuan dalam Solat', soalan:[
+    {kind:'teks', teks:'Solat diakhiri dengan memberi?', pilihan:['Salam','Takbir'], jwp:0},
+    {kind:'teks', teks:'Meletakkan dahi ke lantai/sejadah ialah?', pilihan:['Sujud','Iktidal'], jwp:0},
+    {kind:'teks', teks:'Rukun pertama solat ialah?', pilihan:['Berdiri (bagi yang mampu)','Sujud'], jwp:0},
+  ]},
+  { bahagian:'Sirah: Biodata Nabi Muhammad ﷺ', soalan:[
+    {kind:'teks', teks:'Nabi Muhammad ﷺ lahir di kota?', pilihan:['Makkah','Madinah','Baghdad'], jwp:0},
+    {kind:'teks', teks:'Apakah bangsa Nabi Muhammad ﷺ?', pilihan:['Arab Quraisy','India','Cina'], jwp:0},
+    {kind:'teks', teks:'Apakah gelaran Nabi Muhammad ﷺ?', pilihan:['Al-Amin','Al-Kazzab'], jwp:0},
+    {kind:'teks', teks:'Siapakah ibu susuan Nabi Muhammad ﷺ?', pilihan:['Halimatun Saadiah','Aminah'], jwp:0},
+  ]},
+  { bahagian:'Adab: Kebersihan Diri', soalan:[
+    {kind:'teks', teks:'Menjaga kebersihan diri ialah menjaga tubuh badan dan?', pilihan:['Pakaian','Permainan'], jwp:0},
+    {kind:'em', em:'🪥', teks:'Berapa kali sehari elok gosok gigi?', pilihan:['Dua kali','Tidak pernah'], jwp:0},
+    {kind:'teks', teks:'Badan yang bersih akan berbau?', pilihan:['Harum','Busuk'], jwp:0},
+    {kind:'em', em:'🧼', teks:'Selepas bermain, tangan kita patut?', pilihan:['Dibasuh','Dibiarkan kotor'], jwp:0},
+  ]},
+ ],
+ /* ---------------- SET 10 ---------------- */
+ [
+  { bahagian:'Al-Quran: Bacaan Mad Asli', soalan:[
+    {kind:'teks', teks:'Huruf mad asli ialah alif, wau dan?', pilihan:['ya (ي)','mim (م)','nun (ن)'], jwp:0},
+    {kind:'teks', teks:'Yang manakah BUKAN huruf mad?', pilihan:['ك','ا','ي'], jwp:0},
+    {kind:'teks', teks:'Yang manakah huruf mad WAU?', pilihan:['و','ت','ر'], jwp:0},
+  ]},
+  { bahagian:'Akidah: Rukun Islam', soalan:[
+    {kind:'teks', teks:'Berapakah bilangan Rukun Islam?', pilihan:['5','4','6'], jwp:0},
+    {kind:'teks', teks:'Menunaikan haji ialah rukun Islam yang ke?', pilihan:['5','2','3'], jwp:0},
+    {kind:'susun', teks:'Susun ayat ini:', kata:['Saya','sayang','Nabi','Muhammad']},
+  ]},
+  { bahagian:'Ibadah: Bilangan Rakaat Solat', soalan:[
+    {kind:'padan', pairs:[{gambar:'🌇',j:'Maghrib = 3'},{gambar:'🌃',j:'Isyak = 4'},{gambar:'🌅',j:'Subuh = 2'}]},
+    {kind:'teks', teks:'Solat Asar berapa rakaat?', pilihan:['4','2','3'], jwp:0},
+    {kind:'teks', teks:'Solat yang 3 rakaat ialah?', pilihan:['Maghrib','Zohor','Asar'], jwp:0},
+  ]},
+  { bahagian:'Ibadah: Perlakuan dalam Solat', soalan:[
+    {kind:'teks', teks:'Perbuatan untuk MEMULAKAN solat ialah?', pilihan:['Takbiratul Ihram','Salam','Sujud'], jwp:0},
+    {kind:'teks', teks:'Selepas takbiratul ihram, kita?', pilihan:['Membaca al-Fatihah','Terus sujud'], jwp:0},
+    {kind:'teks', teks:'Rukun solat ada berapa perkara?', pilihan:['13','12','15'], jwp:0},
+  ]},
+  { bahagian:'Sirah: Biodata Nabi Muhammad ﷺ', soalan:[
+    {kind:'teks', teks:'Apakah nama Nabi kita?', pilihan:['Muhammad bin Abdullah','Nabi Daud','Nabi Sulaiman'], jwp:0},
+    {kind:'teks', teks:'Pada tarikh berapa baginda lahir?', pilihan:['12 Rabiulawal','15 Syaaban','1 Syawal'], jwp:0},
+    {kind:'teks', teks:'Nabi Muhammad ﷺ lahir pada hari?', pilihan:['Isnin','Jumaat','Ahad'], jwp:0},
+    {kind:'teks', teks:'Apakah maksud "Al-Amin"?', pilihan:['Yang dipercayai','Yang kaya'], jwp:0},
+  ]},
+  { bahagian:'Adab: Kebersihan Diri', soalan:[
+    {kind:'teks', teks:'Yang manakah amalan kebersihan diri?', pilihan:['Memakai pakaian bersih','Memakai baju kotor'], jwp:0},
+    {kind:'em', em:'🪥', teks:'Kita menggosok gigi supaya gigi?', pilihan:['Bersih','Rosak'], jwp:0},
+    {kind:'teks', teks:'Allah ____ orang yang bersih.', pilihan:['Menyukai','Membenci'], jwp:0},
+    {kind:'teks', teks:'Sebelum makan kita patut?', pilihan:['Membasuh tangan','Bermain'], jwp:0},
+  ]},
+ ],
 ];
+let modulSetTerakhir=-1;
 
 /* ============ utiliti ============ */
 const $=id=>document.getElementById(id);
@@ -594,6 +915,8 @@ function nada(freqs,dur=0.12){
 }
 const bunyiBetul=()=>nada([660,880,1175]);
 const bunyiSalah=()=>nada([300,200],0.18);
+/* fanfare panjang untuk markah penuh */
+function fanfare(){ nada([523,659,784,1047, 784,1047, 880,1175, 988,1319, 1047,1568], 0.14); }
 
 /* ============ navigasi skrin ============ */
 function tunjuk(idSkrin){
@@ -694,9 +1017,13 @@ function mulaSesi(soal, meta, opsi){
 }
 
 function mulaModul(){
+  let idx=Math.random()*MODUL_SETS.length|0;
+  if(MODUL_SETS.length>1 && idx===modulSetTerakhir) idx=(idx+1)%MODUL_SETS.length;
+  modulSetTerakhir=idx;
+  const noSet=idx+1, set=MODUL_SETS[idx];
   let soal=[];
-  MODUL.forEach(b=> b.soalan.forEach(s=> soal.push({...s, arahan:b.bahagian})));
-  mulaSesi(soal, {tajuk:'Ulangkaji Modul Selangkah', modul:true}, {acak:false});
+  set.forEach((b,bi)=> b.soalan.forEach(s=> soal.push({...s, arahan:'Set '+noSet+'/5 · Bahagian '+(bi+1)+' · '+b.bahagian})));
+  mulaSesi(soal, {tajuk:'Ulangkaji Modul Selangkah', modul:true, set:noSet}, {acak:false});
 }
 
 const UCAP_OK=['Bagus! 🎉','Hebat! 🌟','Pandai! 👏','Tepat sekali! ✅','Syabas! 💯','MasyaAllah! 🤩'];
@@ -870,17 +1197,28 @@ function tamatSesi(){
   let b=1; if(peratus>=0.6)b=2; if(peratus>=0.9)b=3;
   $('bintangBaris').textContent='⭐'.repeat(b)+'☆'.repeat(3-b);
   let raut='🌟',tajuk='Hebat!',ucap='';
-  if(peratus>=0.9){raut='🏆';tajuk='Cemerlang!';ucap='MasyaAllah, anak hebat! Hampir semua betul!';}
+  if(betul===jum){raut='🏆';tajuk='Markah Penuh!';ucap='Sempurna! MasyaAllah, semua betul! 🎉';}
+  else if(peratus>=0.9){raut='🏅';tajuk='Cemerlang!';ucap='MasyaAllah, anak hebat! Hampir semua betul!';}
   else if(peratus>=0.6){raut='🌟';tajuk='Bagus!';ucap='Bagus! Teruskan berlatih ya!';}
   else{raut='🌱';tajuk='Jom Cuba Lagi!';ucap='Tak mengapa, latihan buat kita pandai!';}
   $('rautTamat').textContent=raut; $('tajukTamat').textContent=tajuk; $('ucapTamat').textContent=ucap;
+  let rekodBaharu=false, terbaik=null, skop=null;
   if(sesi.meta && sesi.meta.modul){
-    if(rekod['__modul__']==null || betul>rekod['__modul__']){ rekod['__modul__']=betul; simpanRekod(rekod); }
+    skop='Modul';
+    if(rekod['__modul__']==null || betul>rekod['__modul__']){ rekod['__modul__']=betul; simpanRekod(rekod); rekodBaharu=true; }
+    terbaik=rekod['__modul__'];
   }else if(sesi.meta && sesi.meta.sumber && sesi.meta.sumber.length===1){
-    const id=sesi.meta.sumber[0];
-    if(rekod[id]==null || betul>rekod[id]){ rekod[id]=betul; simpanRekod(rekod); }
+    const id=sesi.meta.sumber[0]; skop='latihan ini';
+    if(rekod[id]==null || betul>rekod[id]){ rekod[id]=betul; simpanRekod(rekod); rekodBaharu=true; }
+    terbaik=rekod[id];
   }
-  if(peratus>=0.9)setTimeout(()=>nada([784,988,1175,1568],0.13),150);
+  const elBest=$('hasilTerbaik');
+  if(terbaik!=null && skop){
+    elBest.innerHTML='🏅 Markah terbaik '+skop+': '+terbaik+'/'+jum + (rekodBaharu?'<span class="baharu">Rekod baharu! 🎉</span>':'');
+    elBest.style.display='inline-block';
+  }else{ elBest.style.display='none'; }
+  if(betul===jum) setTimeout(fanfare,180);
+  else if(peratus>=0.9) setTimeout(()=>nada([784,988,1175,1568],0.13),150);
   tunjuk('skrinTamat');
 }
 
@@ -899,13 +1237,17 @@ function tanyaBerhenti(){
   if(modMulti){ tunjuk('skrinPilih'); } else { keMula(); }
 }
 
+function kemasBunyiUI(){
+  const m=$('togolBunyi'); if(m)m.textContent=bunyiOn?'🔊 Bunyi: Buka':'🔇 Bunyi: Tutup';
+  const l=$('btnBunyiLatih'); if(l)l.textContent=bunyiOn?'🔊':'🔇';
+}
 function togolBunyi(){
   bunyiOn=!bunyiOn;
   try{localStorage.setItem('pi_t1_bunyi',bunyiOn?'on':'off')}catch(e){}
-  $('togolBunyi').textContent=bunyiOn?'🔊 Bunyi: Buka':'🔇 Bunyi: Tutup';
+  kemasBunyiUI();
   if(bunyiOn)bunyiBetul();
 }
-$('togolBunyi').textContent=bunyiOn?'🔊 Bunyi: Buka':'🔇 Bunyi: Tutup';
+kemasBunyiUI();
 
 document.addEventListener('gesturestart',e=>e.preventDefault());
 </script>
