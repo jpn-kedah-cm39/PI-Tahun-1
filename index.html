@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Latihan Pendidikan Islam Tahun 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800&family=Scheherazade+New:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --langit:#cfeaff; --rumput:#def3e6; --putih:#ffffff;
+    --teal:#2bb3a3; --teal-gelap:#1b8e80;          /* tindakan utama */
+    --hijau:#3fa34d; --hijau-gelap:#2f7e3a; --hijau-muda:#e6f6e8;
+    --amber:#ffc107; --amber-gelap:#e0a200;
+    --merah:#e5564b; --merah-muda:#fdeceb;
+    --teks:#22413b; --teks-lembut:#5c7d76;
+    --garis:#e4ecf2;
+    --bayang:0 8px 24px rgba(27,79,72,.10);
+    --bayang-besar:0 16px 40px rgba(27,79,72,.16);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0;height:100%}
+  body{
+    font-family:'Nunito',system-ui,-apple-system,sans-serif;
+    color:var(--teks);
+    background:linear-gradient(180deg,var(--langit) 0%,#e3f6f0 40%,var(--rumput) 100%);
+    background-attachment:fixed;
+    min-height:100%;
+    overflow-x:hidden;
+    -webkit-text-size-adjust:100%;
+  }
+  h1,h2,h3,.fred{font-family:'Fredoka',sans-serif}
+  .ar{font-family:'Scheherazade New','Geeza Pro',serif;direction:rtl}
+  .app{max-width:760px;margin:0 auto;padding:16px 16px 48px;position:relative;z-index:2}
+
+  /* langit hiasan */
+  .matahari{position:fixed;top:-40px;right:-30px;width:150px;height:150px;border-radius:50%;
+    background:radial-gradient(circle at 40% 40%,#fff7cf,var(--amber));box-shadow:0 0 60px rgba(255,193,7,.5);z-index:1}
+  .awan{position:fixed;background:#fff;border-radius:50px;opacity:.85;z-index:1}
+  .awan::before,.awan::after{content:"";position:absolute;background:#fff;border-radius:50%}
+  .awan1{width:90px;height:30px;top:90px;left:18px}
+  .awan1::before{width:42px;height:42px;top:-20px;left:14px}
+  .awan1::after{width:30px;height:30px;top:-14px;left:48px}
+  .awan2{width:70px;height:24px;top:160px;right:40px}
+  .awan2::before{width:34px;height:34px;top:-16px;left:10px}
+  .awan2::after{width:24px;height:24px;top:-10px;left:38px}
+
+  /* tajuk utama */
+  header.utama{text-align:center;padding:14px 8px 6px}
+  .maskot{font-size:64px;display:inline-block;animation:terbang 3s ease-in-out infinite}
+  @keyframes terbang{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-10px) rotate(4deg)}}
+  header.utama h1{font-size:30px;margin:6px 0 2px;color:var(--teks);letter-spacing:.3px}
+  header.utama p{margin:0;color:var(--teks-lembut);font-weight:700;font-size:15px}
+
+  /* butang besar */
+  .btn{font-family:'Fredoka',sans-serif;border:none;border-radius:20px;cursor:pointer;
+    font-size:20px;font-weight:600;padding:18px 22px;width:100%;transition:transform .08s ease, box-shadow .15s ease;
+    box-shadow:var(--bayang);display:flex;align-items:center;justify-content:center;gap:10px}
+  .btn:active{transform:scale(.97)}
+  .btn-teal{background:var(--teal);color:#fff;box-shadow:0 6px 0 var(--teal-gelap),var(--bayang)}
+  .btn-teal:active{box-shadow:0 2px 0 var(--teal-gelap);transform:translateY(3px)}
+  .btn-amber{background:var(--amber);color:#6b4e00;box-shadow:0 6px 0 var(--amber-gelap),var(--bayang)}
+  .btn-amber:active{box-shadow:0 2px 0 var(--amber-gelap);transform:translateY(3px)}
+  .btn-hijau{background:var(--hijau);color:#fff;box-shadow:0 6px 0 var(--hijau-gelap),var(--bayang);font-size:18px}
+  .btn-hijau:active{box-shadow:0 2px 0 var(--hijau-gelap);transform:translateY(3px)}
+  .btn-row{display:flex;gap:12px}
+  .btn-row .btn{width:auto;flex:1}
+
+  /* skrin */
+  .skrin{display:none;animation:masuk .3s ease}
+  .skrin.aktif{display:block}
+  @keyframes masuk{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+  .menu-aksi{display:flex;flex-direction:column;gap:14px;margin:22px 0 8px}
+  .tetapan-baris{display:flex;justify-content:center;margin-top:8px}
+  .togol{display:inline-flex;align-items:center;gap:8px;background:#fff;border:none;border-radius:16px;
+    padding:10px 16px;font-family:'Nunito';font-weight:800;font-size:15px;color:var(--teks);box-shadow:var(--bayang);cursor:pointer}
+
+  .tema{background:rgba(255,255,255,.55);border-radius:24px;padding:6px;margin:16px 0;box-shadow:var(--bayang)}
+  .tema-tajuk{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;border-radius:20px}
+  .tema-tajuk .em{font-size:32px}
+  .tema-tajuk .nm{flex:1}
+  .tema-tajuk .nm b{display:block;font-family:'Fredoka';font-size:19px;line-height:1.1}
+  .tema-tajuk .nm small{color:var(--teks-lembut);font-weight:700}
+  .tema-tajuk .chev{font-size:22px;color:var(--teks-lembut);transition:transform .2s}
+  .tema.buka .chev{transform:rotate(90deg)}
+  .tema-isi{display:none;padding:0 8px 8px}
+  .tema.buka .tema-isi{display:block}
+
+  .unit-nama{font-family:'Fredoka';font-weight:600;font-size:15px;color:var(--teks-lembut);margin:12px 6px 6px}
+  .latih{background:#fff;border-radius:18px;padding:14px 14px;margin:8px 0;display:flex;align-items:center;gap:12px;
+    box-shadow:var(--bayang);border:3px solid transparent;transition:border-color .15s, transform .08s}
+  .latih:active{transform:scale(.99)}
+  .latih .ik{font-size:30px;width:48px;height:48px;display:flex;align-items:center;justify-content:center;
+    background:var(--hijau-muda);border-radius:14px;flex:0 0 auto}
+  .latih .info{flex:1;min-width:0}
+  .latih .info b{display:block;font-family:'Fredoka';font-size:17px}
+  .latih .info small{color:var(--teks-lembut);font-weight:700}
+  .latih .main{background:var(--teal);color:#fff;border:none;border-radius:14px;font-family:'Fredoka';
+    font-weight:600;font-size:16px;padding:12px 18px;cursor:pointer;flex:0 0 auto}
+  .latih .main:active{transform:scale(.95)}
+  .latih .tik{display:none;width:34px;height:34px;border-radius:50%;border:3px solid var(--garis);flex:0 0 auto;
+    align-items:center;justify-content:center;font-size:20px;color:#fff;cursor:pointer}
+  body.multi .latih .main{display:none}
+  body.multi .latih .tik{display:flex}
+  .latih.pilih{border-color:var(--hijau)}
+  .latih.pilih .tik{background:var(--hijau);border-color:var(--hijau)}
+  .latih.pilih .ik{background:#d6f0da}
+
+  .bar-bawah{position:fixed;left:0;right:0;bottom:0;z-index:30;padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+    background:linear-gradient(180deg,rgba(222,243,230,0),#def3e6 40%);display:none}
+  body.multi .bar-bawah.ada{display:block}
+  .bar-bawah .inner{max-width:760px;margin:0 auto}
+
+  /* skrin latihan */
+  .top-latih{display:flex;align-items:center;gap:12px;margin:4px 0 14px}
+  .balik{background:#fff;border:none;border-radius:14px;width:48px;height:48px;font-size:22px;cursor:pointer;box-shadow:var(--bayang);flex:0 0 auto}
+  .progres{flex:1;height:18px;background:#fff;border-radius:20px;overflow:hidden;box-shadow:inset 0 2px 4px rgba(0,0,0,.06)}
+  .progres > div{height:100%;background:linear-gradient(90deg,var(--amber),var(--teal));width:0;border-radius:20px;transition:width .35s ease}
+  .bintang-kira{display:flex;align-items:center;gap:4px;font-family:'Fredoka';font-weight:700;font-size:18px;color:var(--amber-gelap)}
+
+  .kad{background:#fff;border-radius:28px;padding:22px 18px 24px;box-shadow:var(--bayang-besar);text-align:center}
+  .arahan{color:var(--teks-lembut);font-weight:800;font-size:15px;margin:0 0 6px;text-transform:uppercase;letter-spacing:.5px}
+  .petikan{background:#f1f9f6;border-radius:18px;padding:14px 16px;text-align:left;font-size:17px;line-height:1.5;
+    font-weight:700;color:var(--teks);margin:0 auto 16px;max-width:560px}
+  .papar-em{font-size:84px;line-height:1;margin:4px 0 10px}
+  .papar-arab{font-family:'Scheherazade New','Geeza Pro',serif;direction:rtl;font-size:64px;line-height:1.3;
+    color:var(--teal-gelap);margin:6px 0 12px;font-weight:700}
+  .papar-kata{font-family:'Fredoka';font-size:46px;font-weight:600;letter-spacing:2px;margin:6px 0 14px;color:var(--teks)}
+  .papar-kata .kosong{color:var(--teal);background:#e6f7f4;border-radius:10px;padding:0 8px;margin:0 2px}
+  .soalan-teks{font-family:'Fredoka';font-size:24px;font-weight:600;line-height:1.25;margin:4px 0 18px;color:var(--teks)}
+
+  .pilihan{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .pilihan.satu-lajur{grid-template-columns:1fr}
+  .opsi{background:#fff;border:3px solid var(--garis);border-radius:20px;padding:20px 14px;
+    font-family:'Fredoka';font-size:24px;font-weight:600;color:var(--teks);cursor:pointer;
+    min-height:72px;display:flex;align-items:center;justify-content:center;gap:8px;
+    transition:transform .08s, border-color .12s, background .12s;box-shadow:var(--bayang)}
+  .opsi.opsi-arab{font-family:'Scheherazade New','Geeza Pro',serif;font-size:40px;direction:rtl}
+  .opsi:active{transform:scale(.97)}
+  .opsi:focus-visible{outline:4px solid var(--amber);outline-offset:2px}
+  .opsi.betul{background:var(--hijau-muda);border-color:var(--hijau);color:var(--hijau)}
+  .opsi.salah{background:var(--merah-muda);border-color:var(--merah);color:var(--merah)}
+  .opsi.kunci{background:var(--hijau-muda);border-color:var(--hijau);color:var(--hijau);animation:degup .5s}
+  @keyframes degup{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+  .opsi[disabled]{cursor:default}
+
+  .mesej{margin-top:18px;min-height:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+  .mesej .raut{font-size:46px;display:none}
+  .mesej .kata{font-family:'Fredoka';font-size:22px;font-weight:600;display:none}
+  .mesej.ok .raut.suka,.mesej.ok .kata.suka{display:block;animation:pop .4s}
+  .mesej.no .raut.sedih,.mesej.no .kata.sedih{display:block}
+  @keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.2)}100%{transform:scale(1)}}
+  .btn-seterus{display:none;margin-top:16px}
+  .mesej.ok ~ .btn-seterus,.mesej.no ~ .btn-seterus{display:flex}
+
+  .padan-arahan,.susun-nota{color:var(--teks-lembut);font-weight:800;font-size:14px;margin:0 0 12px}
+  .padan-grid{display:flex;gap:14px;justify-content:center}
+  .padan-col{display:flex;flex-direction:column;gap:10px;flex:1;max-width:46%}
+  .padan-item{background:#fff;border:3px solid var(--garis);border-radius:18px;min-height:62px;
+    font-family:'Fredoka';font-size:20px;font-weight:600;color:var(--teks);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;padding:8px;box-shadow:var(--bayang);transition:transform .08s,border-color .12s,background .12s}
+  .padan-item:active{transform:scale(.97)}
+  .padan-em{font-size:40px;line-height:1}
+  .padan-item.pilih{border-color:var(--amber);background:#fff8e3}
+  .padan-item.lock{border-color:var(--hijau);background:var(--hijau-muda);color:var(--hijau);cursor:default}
+  .padan-item.silap{border-color:var(--merah);background:var(--merah-muda);animation:goyang .4s}
+  .goyang{animation:goyang .4s}
+  @keyframes goyang{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+  .susun-jwp{min-height:60px;border:3px dashed var(--amber);border-radius:18px;background:#fffdf5;
+    padding:10px;margin:0 0 14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center}
+  .susun-jwp.betul{border-color:var(--hijau);border-style:solid;background:var(--hijau-muda)}
+  .susun-jwp.salah{border-color:var(--merah);border-style:solid;background:var(--merah-muda)}
+  .susun-hint{color:var(--teks-lembut);font-weight:700;font-size:14px}
+  .susun-bank{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:8px}
+  .tile{background:#fff;border:3px solid var(--garis);border-radius:14px;font-family:'Fredoka';
+    font-size:20px;font-weight:600;color:var(--teks);padding:12px 16px;cursor:pointer;box-shadow:var(--bayang);transition:transform .08s,opacity .12s}
+  .tile:active{transform:scale(.95)}
+  .tile.guna{opacity:.25;pointer-events:none}
+  .tile-jwp{border-color:var(--amber);background:#fff8e3}
+  .susun-nota{min-height:18px;color:var(--merah);opacity:0;transition:opacity .2s}
+  .susun-nota.lihat{opacity:1}
+  .susun-semak{margin-top:4px}
+
+  .tamat{text-align:center}
+  .tamat .raut-besar{font-size:96px;animation:terbang 2.4s ease-in-out infinite}
+  .tamat h2{font-size:30px;margin:6px 0}
+  .balang{margin:18px auto;max-width:300px;background:#fff;border-radius:24px;padding:20px;box-shadow:var(--bayang)}
+  .balang .skor{font-family:'Fredoka';font-size:54px;font-weight:700;color:var(--teal);line-height:1}
+  .balang .skor small{font-size:24px;color:var(--teks-lembut)}
+  .bintang-baris{font-size:40px;letter-spacing:4px;margin-top:8px}
+  .tamat .ucap{font-weight:800;color:var(--teks-lembut);font-size:17px;margin:4px 0 22px}
+
+  .nota{background:rgba(255,255,255,.6);border-radius:18px;padding:14px 16px;margin-top:18px;font-size:13.5px;
+    color:var(--teks-lembut);font-weight:700;line-height:1.5}
+  .jejak{display:inline-block;background:#fff;border-radius:10px;padding:2px 8px;margin-left:6px;font-size:13px;color:var(--amber-gelap);font-weight:800}
+  footer{text-align:center;margin-top:22px;font-size:11px;color:var(--teks-lembut);font-weight:700;line-height:1.6}
+
+  @media (max-width:420px){
+    header.utama h1{font-size:25px}
+    .papar-em{font-size:68px}.papar-arab{font-size:52px}
+    .papar-kata{font-size:38px}.soalan-teks{font-size:21px}
+    .opsi{font-size:21px;min-height:64px}.opsi.opsi-arab{font-size:34px}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="matahari"></div>
+<div class="awan awan1"></div>
+<div class="awan awan2"></div>
+
+<div class="app">
+
+  <!-- ============ SKRIN MULA ============ -->
+  <section id="skrinMula" class="skrin aktif">
+    <header class="utama">
+      <div class="maskot">🌟</div>
+      <h1>Latihan Pendidikan Islam</h1>
+      <p>Tahun 1 · KSSR · Mari belajar bersama Cikgu Bintang!</p>
+    </header>
+
+    <div class="menu-aksi">
+      <button class="btn btn-teal" onclick="bukaPilih()">📚 Pilih Latihan</button>
+      <button class="btn btn-hijau" onclick="mulaModul()">📋 Ulangkaji Modul Selangkah</button>
+      <button class="btn btn-amber" onclick="latihanPantas()">⚡ Latihan Pantas (Campur)</button>
+    </div>
+    <div class="tetapan-baris">
+      <button class="togol" id="togolBunyi" onclick="togolBunyi()">🔊 Bunyi: Buka</button>
+    </div>
+
+    <div class="nota">
+      <b>👋 Untuk ibu &amp; ayah:</b> <b>Ulangkaji Modul Selangkah</b> ialah satu set ujian 6 bahagian mengikut tajuk ulang kaji:
+      Al-Quran (Mad Asli), Akidah (Rukun Islam), Ibadah (bilangan rakaat &amp; perlakuan solat), Sirah (biodata Nabi ﷺ) dan Adab (kebersihan diri).
+      <b>Pilih Latihan</b> pula untuk pilih ikut bidang/unit; hidupkan <b>Pilih Banyak</b> untuk gabungkan beberapa latihan.
+      Semua disemak automatik — anak hanya perlu <b>tekan</b>, tiada perlu menaip.
+    </div>
+  </section>
+
+  <!-- ============ SKRIN PILIH ============ -->
+  <section id="skrinPilih" class="skrin">
+    <div class="top-latih">
+      <button class="balik" onclick="keMula()">⬅️</button>
+      <h2 style="margin:0;font-size:22px;flex:1">Pilih Latihan</h2>
+      <button class="togol" id="togolMulti" onclick="togolMulti()">➕ Pilih Banyak</button>
+    </div>
+    <div id="senaraiTema"></div>
+  </section>
+
+  <!-- ============ SKRIN LATIHAN ============ -->
+  <section id="skrinLatihan" class="skrin">
+    <div class="top-latih">
+      <button class="balik" onclick="tanyaBerhenti()">⬅️</button>
+      <div class="progres"><div id="progresBar"></div></div>
+      <div class="bintang-kira"><span>⭐</span><span id="kiraBintang">0</span></div>
+    </div>
+    <div class="kad">
+      <p class="arahan" id="arahan"></p>
+      <div id="petikanKotak"></div>
+      <div id="paparan"></div>
+      <div class="pilihan" id="pilihan"></div>
+      <div class="mesej" id="mesej">
+        <div class="raut suka">🎉</div><div class="raut sedih">🤔</div>
+        <div class="kata suka"></div><div class="kata sedih"></div>
+      </div>
+      <button class="btn btn-teal btn-seterus" id="btnSeterus" onclick="soalanSeterus()">Seterusnya ➡️</button>
+    </div>
+  </section>
+
+  <!-- ============ SKRIN TAMAT ============ -->
+  <section id="skrinTamat" class="skrin tamat">
+    <div class="raut-besar" id="rautTamat">🌟</div>
+    <h2 id="tajukTamat">Hebat!</h2>
+    <div class="balang">
+      <div class="skor"><span id="skorBetul">0</span><small>/<span id="skorJumlah">0</span></small></div>
+      <div class="bintang-baris" id="bintangBaris"></div>
+    </div>
+    <p class="ucap" id="ucapTamat"></p>
+    <div class="btn-row">
+      <button class="btn btn-amber" onclick="ulangLatihan()">🔁 Cuba Lagi</button>
+      <button class="btn btn-teal" onclick="keMula()">🏠 Menu</button>
+    </div>
+  </section>
+
+  <footer>
+    Dibangunkan oleh Hafiz Husaini · Unit TMK, Sektor Pembelajaran · JPNK<br>
+    Berdasarkan Buku Teks KSSR Pendidikan Islam Tahun 1
+  </footer>
+</div>
+
+<div class="bar-bawah" id="barBawah">
+  <div class="inner">
+    <button class="btn btn-teal" id="btnMulaPilihan" onclick="mulaPilihan()">▶️ Mula (<span id="bilPilih">0</span> latihan)</button>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   DATA LATIHAN — berdasarkan Buku Teks KSSR Pendidikan Islam Tahun 1
+   Bidang: Al-Quran, Hadis, Akidah, Ibadah, Sirah, Adab, Jawi
+   kind: 'teks' (soalan), 'em' (emoji), 'kata' (perkataan+kosong),
+         'padan' (padan gambar), 'susun' (bina ayat).
+   arab: teks Arab/Jawi besar (pilihan). Semua: tekan jawapan.
+   ========================================================= */
+const DATA = [
+ { id:'quran', nama:'Al-Quran', emoji:'📖',
+   units:[
+    { nama:'Mengenal Huruf Hijaiah', latihan:[
+      { id:'qh1', tajuk:'Kenal Huruf Hijaiah', ikon:'🔤',
+        arahan:'Huruf ini dinamakan?', soalan:[
+        {kind:'teks', arab:'ا', teks:'Huruf ini dinamakan?', pilihan:['Alif','Ba','Ta'], jwp:0},
+        {kind:'teks', arab:'ب', teks:'Huruf ini dinamakan?', pilihan:['Nun','Ba','Ya'], jwp:1},
+        {kind:'teks', arab:'ج', teks:'Huruf ini dinamakan?', pilihan:['Jim','Ha','Kha'], jwp:0},
+        {kind:'teks', arab:'م', teks:'Huruf ini dinamakan?', pilihan:['Lam','Mim','Nun'], jwp:1},
+        {kind:'teks', teks:'Huruf hijaiah yang pertama ialah?', pilihan:['Alif','Ya','Ba'], jwp:0},
+      ]},
+    ]},
+    { nama:'Baris (Tanda Bacaan)', latihan:[
+      { id:'qb1', tajuk:'Kenal Baris', ikon:'☝️',
+        arahan:'Pilih jawapan yang betul', soalan:[
+        {kind:'teks', arab:'بَ', teks:'Baris di ATAS huruf dipanggil?', pilihan:['Fathah (atas)','Kasrah (bawah)','Dhammah (depan)'], jwp:0},
+        {kind:'teks', arab:'بِ', teks:'Baris di BAWAH huruf dipanggil?', pilihan:['Kasrah (bawah)','Fathah (atas)','Dhammah (depan)'], jwp:0},
+        {kind:'teks', arab:'بُ', teks:'Baris di HADAPAN huruf dipanggil?', pilihan:['Dhammah (depan)','Kasrah (bawah)','Fathah (atas)'], jwp:0},
+        {kind:'teks', teks:'Baris fathah dibunyikan dengan bunyi?', pilihan:['"a"','"i"','"u"'], jwp:0},
+        {kind:'teks', teks:'Baris dhammah dibunyikan dengan bunyi?', pilihan:['"u"','"a"','"i"'], jwp:0},
+      ]},
+    ]},
+    { nama:'Bacaan Mad Asli (ا · و · ي)', latihan:[
+      { id:'qm1', tajuk:'Huruf Mad Asli', ikon:'〰️',
+        arahan:'Pilih jawapan yang betul', soalan:[
+        {kind:'teks', teks:'Berapakah bilangan huruf mad asli?', pilihan:['3','2','4'], jwp:0},
+        {kind:'teks', teks:'Yang manakah huruf mad ALIF?', pilihan:['ا','ب','ك'], jwp:0},
+        {kind:'teks', teks:'Yang manakah huruf mad WAU?', pilihan:['و','م','ن'], jwp:0},
+        {kind:'teks', teks:'Yang manakah huruf mad YA?', pilihan:['ي','د','ر'], jwp:0},
+        {kind:'teks', teks:'Bacaan mad dibaca dengan?', pilihan:['Panjang','Pendek'], jwp:0},
+        {kind:'teks', teks:'Yang manakah BUKAN huruf mad?', pilihan:['ب','ا','و'], jwp:0},
+      ]},
+    ]},
+    { nama:'Tanwin (Baris Dua)', latihan:[
+      { id:'qt1', tajuk:'Bacaan Tanwin', ikon:'🔂',
+        arahan:'Pilih jawapan yang betul', soalan:[
+        {kind:'teks', teks:'Tanwin ialah baris?', pilihan:['Dua','Satu','Tiga'], jwp:0},
+        {kind:'teks', teks:'Baris dua di atas dipanggil?', pilihan:['Fathatain','Kasratain','Dhammatain'], jwp:0},
+        {kind:'teks', teks:'Baris dua di bawah dipanggil?', pilihan:['Kasratain','Fathatain','Dhammatain'], jwp:0},
+        {kind:'teks', teks:'Baris dua di hadapan dipanggil?', pilihan:['Dhammatain','Kasratain','Fathatain'], jwp:0},
+      ]},
+    ]},
+   ]},
+
+ { id:'hadis', nama:'Hadis', emoji:'📜',
+   units:[
+    { nama:'Hadis Kebersihan', latihan:[
+      { id:'hd1', tajuk:'Kebersihan Sebahagian Iman', ikon:'🧼',
+        arahan:'Pilih jawapan yang betul', soalan:[
+        {kind:'teks', teks:'Hadis ialah perkataan dan perbuatan?', pilihan:['Nabi Muhammad ﷺ','Kawan kita'], jwp:0},
+        {kind:'teks', teks:'"Kebersihan itu sebahagian daripada ____."', pilihan:['iman','permainan'], jwp:0},
+        {kind:'em', em:'🧹', teks:'Menjaga kebersihan disukai oleh?', pilihan:['Allah','Tiada sesiapa'], jwp:0},
+        {kind:'teks', teks:'Kita amalkan kebersihan supaya badan?', pilihan:['Sihat','Sakit'], jwp:0},
+      ]},
+    ]},
+   ]},
+
+ { id:'akidah', nama:'Akidah', emoji:'🕌',
+   units:[
+    { nama:'Rukun Iman', latihan:[
+      { id:'ai1', tajuk:'Rukun Iman', ikon:'☪️',
+        arahan:'Pilih jawapan yang betul', soalan:[
+        {kind:'teks', teks:'Rukun Iman ada berapa?', pilihan:['6','5','4'], jwp:0},
+        {kind:'teks', teks:'Rukun Iman pertama: beriman kepada?', pilihan:['Allah','Malaikat'], jwp:0},
+        {kind:'teks', teks:'Kitab umat Islam ialah?', pilihan:['Al-Quran','Buku cerita'], jwp:0},
+        {kind:'teks', teks:'Rasul yang terakhir ialah?', pilihan:['Nabi Muhammad ﷺ','Nabi Adam'], jwp:0},
+        {kind:'teks', teks:'Makhluk Allah yang sentiasa taat ialah?', pilihan:['Malaikat','Syaitan'], jwp:0},
+      ]},
+    ]},
+    { nama:'Rukun Islam', latihan:[
+      { id:'as1', tajuk:'Rukun Islam', ikon:'🕋',
+        arahan:'Pilih jawapan yang betul', soalan:[
+        {kind:'teks', teks:'Berapakah bilangan Rukun Islam?', pilihan:['5','4','6'], jwp:0},
+        {kind:'teks', teks:'Rukun Islam yang PERTAMA ialah?', pilihan:['Mengucap dua kalimah syahadah','Mendirikan solat','Berpuasa','Menunaikan haji'], jwp:0},
+        {kind:'teks', teks:'Rukun Islam yang KEDUA ialah?', pilihan:['Mendirikan solat','Mengeluarkan zakat','Berpuasa'], jwp:0},
+        {kind:'teks', teks:'Kita berpuasa pada bulan?', pilihan:['Ramadan','Syawal','Rejab'], jwp:0},
+        {kind:'teks', teks:'Mengeluarkan zakat ialah rukun Islam yang ke?', pilihan:['4','2','3'], jwp:0},
+        {kind:'em', em:'🕋', teks:'Kita menunaikan haji di?', pilihan:['Makkah','Madinah','Mesir'], jwp:0},
+      ]},
+    ]},
+    { nama:'Asmaul Husna', latihan:[
+      { id:'aa1', tajuk:'Nama-nama Allah', ikon:'🤍',
+        arahan:'Pilih jawapan yang betul', soalan:[
+        {kind:'teks', teks:'Nama-nama Allah yang indah dipanggil?', pilihan:['Asmaul Husna','Rukun Islam'], jwp:0},
+        {kind:'teks', arab:'الرَّحْمٰن', teks:'"Ar-Rahman" bermaksud Allah Maha?', pilihan:['Pemurah','Melihat'], jwp:0},
+        {kind:'teks', arab:'الرَّحِيم', teks:'"Ar-Rahim" bermaksud Allah Maha?', pilihan:['Penyayang','Mendengar'], jwp:0},
+        {kind:'teks', teks:'Siapakah yang mencipta langit dan bumi?', pilihan:['Allah','Manusia'], jwp:0},
+      ]},
+    ]},
+   ]},
+
+ { id:'ibadah', nama:'Ibadah', emoji:'🤲',
+   units:[
+    { nama:'Bersuci (Taharah)', latihan:[
+      { id:'ib1', tajuk:'Bersuci & Istinjak', ikon:'💧',
+        arahan:'Pilih jawapan yang betul', soalan:[
+        {kind:'teks', teks:'Membersihkan najis selepas membuang air dipanggil?', pilihan:['Beristinjak','Bermain'], jwp:0},
+        {kind:'teks', teks:'Kita beristinjak menggunakan?', pilihan:['Air atau batu','Pasir sahaja'], jwp:0},
+        {kind:'em', em:'💧', teks:'Air yang suci dan menyucikan contohnya?', pilihan:['Air hujan','Air kotor'], jwp:0},
+        {kind:'teks', teks:'Najis dibersihkan supaya kita?', pilihan:['Suci dan bersih','Kotor'], jwp:0},
+      ]},
+    ]},
+    { nama:'Wuduk', latihan:[
+      { id:'iw1', tajuk:'Cara Berwuduk', ikon:'🚰',
+        arahan:'Pilih jawapan yang betul', soalan:[
+        {kind:'teks', teks:'Sebelum solat, kita mesti?', pilihan:['Berwuduk','Tidur'], jwp:0},
+        {kind:'teks', teks:'Perkara pertama dalam wuduk ialah?', pilihan:['Niat','Basuh kaki'], jwp:0},
+        {kind:'teks', teks:'Selepas niat, kita membasuh?', pilihan:['Muka','Perut'], jwp:0},
+        {kind:'teks', teks:'Akhir sekali dalam wuduk, kita membasuh?', pilihan:['Kaki hingga buku lali','Rambut'], jwp:0},
+        {kind:'teks', teks:'Antara yang membatalkan wuduk ialah?', pilihan:['Membuang air kecil','Membaca buku'], jwp:0},
+      ]},
+    ]},
+    { nama:'Bilangan Rakaat Solat', latihan:[
+      { id:'ir1', tajuk:'Bilangan Rakaat', ikon:'🧎',
+        arahan:'Pilih jawapan yang betul', soalan:[
+        {kind:'em', em:'🌅', teks:'Solat Subuh berapa rakaat?', pilihan:['2','3','4'], jwp:0},
+        {kind:'teks', teks:'Solat Zohor berapa rakaat?', pilihan:['4','2','3'], jwp:0},
+        {kind:'teks', teks:'Solat Asar berapa rakaat?', pilihan:['4','2','3'], jwp:0},
+        {kind:'em', em:'🌇', teks:'Solat Maghrib berapa rakaat?', pilihan:['3','2','4'], jwp:0},
+        {kind:'teks', teks:'Solat Isyak berapa rakaat?', pilihan:['4','2','3'], jwp:0},
+        {kind:'teks', teks:'Solat yang 3 rakaat ialah?', pilihan:['Maghrib','Subuh','Asar'], jwp:0},
+      ]},
+    ]},
+    { nama:'Perlakuan dalam Solat', latihan:[
+      { id:'ip1', tajuk:'Perlakuan dalam Solat', ikon:'🙇',
+        arahan:'Pilih jawapan yang betul', soalan:[
+        {kind:'teks', teks:'Perbuatan untuk MEMULAKAN solat ialah?', pilihan:['Takbiratul Ihram','Rukuk','Sujud'], jwp:0},
+        {kind:'teks', arab:'اللّٰهُ أَكْبَر', teks:'Lafaz semasa takbiratul ihram ialah?', pilihan:['Allahu Akbar','Assalamualaikum'], jwp:0},
+        {kind:'teks', teks:'Selepas takbir, kita membaca surah?', pilihan:['Al-Fatihah','Yasin'], jwp:0},
+        {kind:'teks', teks:'Perbuatan membongkok dalam solat ialah?', pilihan:['Rukuk','Sujud'], jwp:0},
+        {kind:'teks', teks:'Meletakkan dahi ke tempat sujud ialah?', pilihan:['Sujud','Rukuk'], jwp:0},
+        {kind:'teks', teks:'Solat diakhiri dengan memberi?', pilihan:['Salam','Takbir'], jwp:0},
+        {kind:'teks', teks:'Rukun solat ada berapa perkara?', pilihan:['13','10','15'], jwp:0},
+      ]},
+    ]},
+   ]},
+
+ { id:'sirah', nama:'Sirah', emoji:'🌙',
+   units:[
+    { nama:'Biodata Nabi Muhammad ﷺ', latihan:[
+      { id:'sb1', tajuk:'Biodata Nabi Muhammad ﷺ', ikon:'🌙',
+        arahan:'Pilih jawapan yang betul', soalan:[
+        {kind:'teks', teks:'Apakah nama Nabi kita?', pilihan:['Muhammad bin Abdullah','Nabi Musa','Nabi Isa'], jwp:0},
+        {kind:'teks', teks:'Nabi Muhammad ﷺ lahir pada bulan?', pilihan:['Rabiulawal','Ramadan','Rejab'], jwp:0},
+        {kind:'teks', teks:'Pada tarikh berapa baginda lahir?', pilihan:['12 Rabiulawal','1 Rabiulawal','10 Muharam'], jwp:0},
+        {kind:'em', em:'🕋', teks:'Nabi Muhammad ﷺ lahir di?', pilihan:['Makkah','Madinah','Baghdad'], jwp:0},
+        {kind:'teks', teks:'Apakah bangsa Nabi Muhammad ﷺ?', pilihan:['Arab Quraisy','Melayu','Parsi'], jwp:0},
+        {kind:'teks', teks:'Apakah gelaran Nabi Muhammad ﷺ?', pilihan:['Al-Amin','Al-Faruq'], jwp:0},
+        {kind:'teks', teks:'Apakah maksud "Al-Amin"?', pilihan:['Yang dipercayai','Yang kaya'], jwp:0},
+      ]},
+    ]},
+    { nama:'Keluarga Nabi', latihan:[
+      { id:'sk1', tajuk:'Keluarga Nabi Muhammad ﷺ', ikon:'👪',
+        arahan:'Pilih jawapan yang betul', soalan:[
+        {kind:'teks', teks:'Siapakah nama AYAH Nabi Muhammad ﷺ?', pilihan:['Abdullah','Abu Talib'], jwp:0},
+        {kind:'teks', teks:'Siapakah nama IBU Nabi Muhammad ﷺ?', pilihan:['Aminah','Khadijah'], jwp:0},
+        {kind:'teks', teks:'Siapakah nama DATUK Nabi Muhammad ﷺ?', pilihan:['Abdul Muttalib','Abu Bakar'], jwp:0},
+        {kind:'teks', teks:'Siapakah ibu susuan Nabi Muhammad ﷺ?', pilihan:['Halimatun Saadiah','Fatimah'], jwp:0},
+      ]},
+    ]},
+    { nama:'Sifat Nabi', latihan:[
+      { id:'ss1', tajuk:'Sifat Siddiq Nabi', ikon:'🤝',
+        arahan:'Pilih jawapan yang betul', soalan:[
+        {kind:'teks', teks:'"Siddiq" bermaksud?', pilihan:['Benar / jujur','Bohong'], jwp:0},
+        {kind:'teks', teks:'Nabi Muhammad ﷺ tidak pernah?', pilihan:['Berbohong','Tersenyum'], jwp:0},
+        {kind:'teks', teks:'Kerana jujur, baginda digelar?', pilihan:['Al-Amin','Pendusta'], jwp:0},
+        {kind:'teks', teks:'Kita patut bercakap dengan?', pilihan:['Benar','Bohong'], jwp:0},
+      ]},
+    ]},
+   ]},
+
+ { id:'adab', nama:'Adab', emoji:'🤍',
+   units:[
+    { nama:'Kebersihan Diri', latihan:[
+      { id:'ad1', tajuk:'Adab Kebersihan Diri', ikon:'🪥',
+        arahan:'Pilih jawapan yang betul', soalan:[
+        {kind:'teks', teks:'Menjaga kebersihan diri ialah menjaga tubuh badan dan?', pilihan:['Pakaian','Mainan'], jwp:0},
+        {kind:'em', em:'🪥', teks:'Yang manakah amalan kebersihan diri?', pilihan:['Menggosok gigi','Bermain lumpur'], jwp:0},
+        {kind:'em', em:'🧼', teks:'Sebelum makan, kita perlu?', pilihan:['Membasuh tangan','Tidur'], jwp:0},
+        {kind:'teks', teks:'Allah ____ orang yang membersihkan diri.', pilihan:['Mengasihi','Memarahi'], jwp:0},
+        {kind:'em', em:'💅', teks:'Memotong kuku menjaga kebersihan diri.', pilihan:['Betul','Salah'], jwp:0},
+        {kind:'em', em:'👕', teks:'Selepas mandi, kita pakai pakaian yang?', pilihan:['Bersih','Kotor'], jwp:0},
+      ]},
+    ]},
+    { nama:'Adab dengan Keluarga', latihan:[
+      { id:'ak1', tajuk:'Adab dengan Keluarga', ikon:'👨‍👩‍👧',
+        arahan:'Pilih jawapan yang betul', soalan:[
+        {kind:'teks', teks:'Kepada ibu bapa, kita bercakap dengan?', pilihan:['Sopan','Kasar'], jwp:0},
+        {kind:'teks', teks:'Sebelum keluar rumah, kita patut?', pilihan:['Minta izin & beri salam','Terus pergi'], jwp:0},
+        {kind:'teks', teks:'Apabila ibu memanggil, kita?', pilihan:['Segera datang','Buat tak tahu'], jwp:0},
+        {kind:'teks', teks:'Kita patut menyayangi?', pilihan:['Keluarga','Tiada sesiapa'], jwp:0},
+      ]},
+    ]},
+    { nama:'Adab kepada Allah & Rasul', latihan:[
+      { id:'ar1', tajuk:'Adab kepada Allah & Rasul', ikon:'🕌',
+        arahan:'Pilih jawapan yang betul', soalan:[
+        {kind:'teks', teks:'Apabila menyebut nama Nabi Muhammad, kita ucap?', pilihan:['Selawat (ﷺ)','Tiada apa-apa'], jwp:0},
+        {kind:'teks', teks:'Kita beribadah dan berdoa hanya kepada?', pilihan:['Allah','Berhala'], jwp:0},
+        {kind:'em', em:'📖', teks:'Al-Quran patut kita?', pilihan:['Hormati & jaga','Conteng'], jwp:0},
+      ]},
+    ]},
+   ]},
+
+ { id:'jawi', nama:'Jawi', emoji:'✍️',
+   units:[
+    { nama:'Mengenal Tulisan Jawi', latihan:[
+      { id:'jw1', tajuk:'Tulisan Jawi', ikon:'✍️',
+        arahan:'Pilih jawapan yang betul', soalan:[
+        {kind:'teks', teks:'Tulisan jawi ditulis dari arah?', pilihan:['Kanan ke kiri','Kiri ke kanan'], jwp:0},
+        {kind:'teks', teks:'Tulisan jawi menggunakan huruf?', pilihan:['Hijaiah (Arab)','Rumi'], jwp:0},
+        {kind:'teks', arab:'ا', teks:'Huruf jawi ini dinamakan?', pilihan:['Alif','Ba'], jwp:0},
+        {kind:'teks', arab:'با', teks:'Bacaan jawi ini ialah?', pilihan:['ba','ka'], jwp:0},
+      ]},
+    ]},
+   ]},
+];
+
+/* ===================== MODUL SELANGKAH — PENDIDIKAN ISLAM ===================== */
+const MODUL = [
+ { bahagian:'Bahagian 1 · Al-Quran: Bacaan Mad Asli', soalan:[
+   {kind:'teks', teks:'Berapakah bilangan huruf mad asli?', pilihan:['3','2','4'], jwp:0},
+   {kind:'teks', teks:'Yang manakah huruf mad ALIF?', pilihan:['ا','ب','ك'], jwp:0},
+   {kind:'teks', teks:'Yang manakah huruf mad WAU?', pilihan:['و','م','ن'], jwp:0},
+   {kind:'teks', teks:'Yang manakah huruf mad YA?', pilihan:['ي','د','ر'], jwp:0},
+   {kind:'teks', teks:'Bacaan mad dibaca dengan?', pilihan:['Panjang','Pendek'], jwp:0},
+ ]},
+ { bahagian:'Bahagian 2 · Akidah: Rukun Islam', soalan:[
+   {kind:'teks', teks:'Berapakah bilangan Rukun Islam?', pilihan:['5','4','6'], jwp:0},
+   {kind:'teks', teks:'Rukun Islam yang PERTAMA ialah?', pilihan:['Mengucap dua kalimah syahadah','Mendirikan solat','Menunaikan haji'], jwp:0},
+   {kind:'teks', teks:'Kita berpuasa pada bulan?', pilihan:['Ramadan','Syawal','Rejab'], jwp:0},
+   {kind:'susun', teks:'Susun ayat ini:', kata:['Rukun','Islam','ada','lima']},
+ ]},
+ { bahagian:'Bahagian 3 · Ibadah: Bilangan Rakaat Solat', soalan:[
+   {kind:'padan', pairs:[{gambar:'🌅',j:'Subuh = 2'},{gambar:'🌇',j:'Maghrib = 3'},{gambar:'🌞',j:'Zohor = 4'}]},
+   {kind:'teks', teks:'Solat Isyak berapa rakaat?', pilihan:['4','2','3'], jwp:0},
+   {kind:'teks', teks:'Solat yang 3 rakaat ialah?', pilihan:['Maghrib','Subuh','Asar'], jwp:0},
+ ]},
+ { bahagian:'Bahagian 4 · Ibadah: Perlakuan dalam Solat', soalan:[
+   {kind:'teks', teks:'Perbuatan untuk MEMULAKAN solat ialah?', pilihan:['Takbiratul Ihram','Rukuk','Sujud'], jwp:0},
+   {kind:'teks', teks:'Selepas takbir, kita membaca surah?', pilihan:['Al-Fatihah','Yasin'], jwp:0},
+   {kind:'teks', teks:'Meletakkan dahi ke tempat sujud ialah?', pilihan:['Sujud','Rukuk'], jwp:0},
+   {kind:'teks', teks:'Solat diakhiri dengan memberi?', pilihan:['Salam','Takbir'], jwp:0},
+ ]},
+ { bahagian:'Bahagian 5 · Sirah: Biodata Nabi Muhammad ﷺ', soalan:[
+   {kind:'teks', teks:'Apakah nama Nabi kita?', pilihan:['Muhammad bin Abdullah','Nabi Musa','Nabi Isa'], jwp:0},
+   {kind:'teks', teks:'Pada tarikh berapa baginda lahir?', pilihan:['12 Rabiulawal','1 Rabiulawal','10 Muharam'], jwp:0},
+   {kind:'teks', teks:'Nabi Muhammad ﷺ lahir di?', pilihan:['Makkah','Madinah','Baghdad'], jwp:0},
+   {kind:'teks', teks:'Apakah bangsa Nabi Muhammad ﷺ?', pilihan:['Arab Quraisy','Melayu','Parsi'], jwp:0},
+   {kind:'teks', teks:'Apakah gelaran Nabi Muhammad ﷺ?', pilihan:['Al-Amin','Al-Faruq'], jwp:0},
+ ]},
+ { bahagian:'Bahagian 6 · Adab: Kebersihan Diri', soalan:[
+   {kind:'teks', teks:'Menjaga kebersihan diri ialah menjaga tubuh badan dan?', pilihan:['Pakaian','Mainan'], jwp:0},
+   {kind:'em', em:'🪥', teks:'Yang manakah amalan kebersihan diri?', pilihan:['Menggosok gigi','Bermain lumpur'], jwp:0},
+   {kind:'teks', teks:'Allah ____ orang yang membersihkan diri.', pilihan:['Mengasihi','Memarahi'], jwp:0},
+   {kind:'em', em:'💅', teks:'Memotong kuku menjaga kebersihan diri.', pilihan:['Betul','Salah'], jwp:0},
+ ]},
+];
+
+/* ============ utiliti ============ */
+const $=id=>document.getElementById(id);
+const semua=DATA.flatMap(t=>t.units.flatMap(u=>u.latihan));
+const cariLatihan=id=>semua.find(l=>l.id===id);
+const adaArab=s=>/[\u0600-\u06FF]/.test(''+s);
+
+function muatRekod(){try{return JSON.parse(localStorage.getItem('pi_t1_rekod')||'{}')}catch(e){return{}}}
+function simpanRekod(r){try{localStorage.setItem('pi_t1_rekod',JSON.stringify(r))}catch(e){}}
+let rekod=muatRekod();
+
+/* bunyi (WebAudio, tiada fail luar) */
+let bunyiOn=true;
+try{bunyiOn=localStorage.getItem('pi_t1_bunyi')!=='off'}catch(e){}
+let ac=null;
+function nada(freqs,dur=0.12){
+  if(!bunyiOn)return;
+  try{
+    ac=ac||new (window.AudioContext||window.webkitAudioContext)();
+    let t=ac.currentTime;
+    freqs.forEach(f=>{
+      const o=ac.createOscillator(),g=ac.createGain();
+      o.type='sine';o.frequency.value=f;o.connect(g);g.connect(ac.destination);
+      g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.25,t+0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+      o.start(t);o.stop(t+dur);t+=dur;
+    });
+  }catch(e){}
+}
+const bunyiBetul=()=>nada([660,880,1175]);
+const bunyiSalah=()=>nada([300,200],0.18);
+
+/* ============ navigasi skrin ============ */
+function tunjuk(idSkrin){
+  document.querySelectorAll('.skrin').forEach(s=>s.classList.remove('aktif'));
+  $(idSkrin).classList.add('aktif');
+  window.scrollTo(0,0);
+}
+function keMula(){ multiOff(); tunjuk('skrinMula'); }
+function bukaPilih(){ binaSenarai(); tunjuk('skrinPilih'); }
+
+/* ============ skrin pilih ============ */
+let modMulti=false;
+let pilihan=new Set();
+
+function binaSenarai(){
+  const wrap=$('senaraiTema'); wrap.innerHTML='';
+  DATA.forEach((t,ti)=>{
+    const tema=document.createElement('div');
+    tema.className='tema'+(ti===0?' buka':'');
+    const bilLatih=t.units.reduce((a,u)=>a+u.latihan.length,0);
+    tema.innerHTML=`
+      <div class="tema-tajuk" onclick="this.parentNode.classList.toggle('buka')">
+        <span class="em">${t.emoji}</span>
+        <span class="nm"><b>${t.nama}</b><small>${bilLatih} latihan</small></span>
+        <span class="chev">▶</span>
+      </div>
+      <div class="tema-isi"></div>`;
+    const isi=tema.querySelector('.tema-isi');
+    t.units.forEach(u=>{
+      const un=document.createElement('div');
+      un.className='unit-nama'; un.textContent=u.nama; isi.appendChild(un);
+      u.latihan.forEach(l=>{
+        const best=rekod[l.id];
+        const jejak=best!=null?`<span class="jejak">⭐ Terbaik: ${best}/${l.soalan.length}</span>`:'';
+        const row=document.createElement('div');
+        row.className='latih'; row.dataset.id=l.id;
+        row.innerHTML=`
+          <div class="ik">${l.ikon}</div>
+          <div class="info"><b>${l.tajuk}</b><small>${l.soalan.length} soalan ${jejak}</small></div>
+          <button class="main" onclick="event.stopPropagation();mulaLatihanTunggal('${l.id}')">Main</button>
+          <div class="tik">✓</div>`;
+        row.onclick=()=>{ if(modMulti) togolPilih(l.id,row); };
+        isi.appendChild(row);
+      });
+    });
+    wrap.appendChild(tema);
+  });
+}
+
+function togolMulti(){ modMulti?multiOff():multiOn(); }
+function multiOn(){ modMulti=true; document.body.classList.add('multi'); $('togolMulti').textContent='✖️ Batal'; kemasBarBawah(); }
+function multiOff(){
+  modMulti=false; pilihan.clear(); document.body.classList.remove('multi');
+  const t=$('togolMulti'); if(t)t.textContent='➕ Pilih Banyak';
+  document.querySelectorAll('.latih.pilih').forEach(r=>r.classList.remove('pilih'));
+  kemasBarBawah();
+}
+function togolPilih(id,row){
+  if(pilihan.has(id)){pilihan.delete(id);row.classList.remove('pilih');}
+  else{pilihan.add(id);row.classList.add('pilih');}
+  kemasBarBawah();
+}
+function kemasBarBawah(){ $('bilPilih').textContent=pilihan.size; $('barBawah').classList.toggle('ada',pilihan.size>0); }
+
+/* ============ mulakan latihan ============ */
+let sesi=null;
+
+function mulaLatihanTunggal(id){
+  const l=cariLatihan(id);
+  mulaSesi(l.soalan.map(s=>({...s,arahan:s.arahan||l.arahan,petikan:l.petikan})),{tajuk:l.tajuk, sumber:[id]});
+}
+function mulaPilihan(){
+  if(pilihan.size===0)return;
+  let soal=[];
+  semua.forEach(l=>{ if(pilihan.has(l.id)) l.soalan.forEach(s=>soal.push({...s,arahan:s.arahan||l.arahan,petikan:l.petikan})); });
+  mulaSesi(soal,{tajuk:'Latihan Pilihan', sumber:[...pilihan]});
+}
+function latihanPantas(){
+  let kolam=[];
+  semua.forEach(l=>l.soalan.forEach(s=>kolam.push({...s,arahan:s.arahan||l.arahan,petikan:l.petikan})));
+  kolam=kacau(kolam).slice(0,10);
+  mulaSesi(kolam,{tajuk:'Latihan Pantas', sumber:null});
+}
+function kacau(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function mulaSesi(soal, meta, opsi){
+  if(!soal||!soal.length)return;
+  const acak = !(opsi && opsi.acak===false);
+  let list = acak ? kacau(soal) : soal.slice();
+  list = list.map(s=>{
+    if(!s.pilihan) return {...s};
+    const ki=kacau(s.pilihan.map((_,i)=>i));
+    return {...s, pilihan:ki.map(i=>s.pilihan[i]), jwp:ki.indexOf(s.jwp)};
+  });
+  sesi={soal:list, idx:0, betul:0, dijwp:false, meta};
+  tunjuk('skrinLatihan');
+  renderSoalan();
+}
+
+function mulaModul(){
+  let soal=[];
+  MODUL.forEach(b=> b.soalan.forEach(s=> soal.push({...s, arahan:b.bahagian})));
+  mulaSesi(soal, {tajuk:'Ulangkaji Modul Selangkah', modul:true}, {acak:false});
+}
+
+const UCAP_OK=['Bagus! 🎉','Hebat! 🌟','Pandai! 👏','Tepat sekali! ✅','Syabas! 💯','MasyaAllah! 🤩'];
+const UCAP_NO=['Cuba lagi ya!','Tak apa, jom belajar!','Hampir betul!','Jangan putus asa!'];
+
+function renderSoalan(){
+  sesi.dijwp=false;
+  const s=sesi.soal[sesi.idx];
+  $('arahan').textContent=s.arahan||'Pilih jawapan yang betul';
+  $('petikanKotak').innerHTML = s.petikan ? `<div class="petikan">📖 ${s.petikan}</div>` : '';
+
+  const box=$('pilihan'); box.innerHTML=''; box.className='pilihan';
+
+  if(s.kind==='padan'){ $('paparan').innerHTML=''; renderPadan(s); }
+  else if(s.kind==='susun'){ $('paparan').innerHTML=''; renderSusun(s); }
+  else {
+    let p='';
+    if(s.arab) p+=`<div class="papar-arab">${s.arab}</div>`;
+    if(s.kind==='kata'){
+      const html=s.kata.replace('_','<span class="kosong">?</span>');
+      p+=`${s.em?`<div class="papar-em">${s.em}</div>`:''}<div class="papar-kata">${html}</div>`;
+      if(s.teks)p+=`<div class="soalan-teks" style="font-size:20px">${s.teks}</div>`;
+    }else if(s.kind==='em'){
+      p+=`<div class="papar-em">${s.em}</div><div class="soalan-teks">${s.teks}</div>`;
+    }else{
+      p+=`<div class="soalan-teks">${s.teks}</div>`;
+    }
+    $('paparan').innerHTML=p;
+    const panjang=s.pilihan.some(x=>(''+x).length>6 || /\s/.test(x));
+    box.className='pilihan'+(panjang?' satu-lajur':'');
+    s.pilihan.forEach((opt,i)=>{
+      const b=document.createElement('button');
+      b.className='opsi'+(adaArab(opt)?' opsi-arab':'');
+      b.type='button'; b.textContent=opt;
+      b.onclick=()=>jawab(i,b);
+      box.appendChild(b);
+    });
+  }
+
+  const m=$('mesej'); m.className='mesej';
+  m.querySelector('.kata.suka').textContent='';
+  m.querySelector('.kata.sedih').textContent='';
+  $('progresBar').style.width=(sesi.idx/sesi.soal.length*100)+'%';
+  $('kiraBintang').textContent=sesi.betul;
+}
+
+function tunjukKeputusan(ok, infoSalah){
+  sesi.dijwp=true;
+  const m=$('mesej');
+  if(ok){
+    sesi.betul++; $('kiraBintang').textContent=sesi.betul;
+    m.classList.add('ok');
+    m.querySelector('.kata.suka').textContent=UCAP_OK[Math.random()*UCAP_OK.length|0];
+    bunyiBetul();
+  }else{
+    m.classList.add('no');
+    m.querySelector('.kata.sedih').textContent=UCAP_NO[Math.random()*UCAP_NO.length|0]+(infoSalah?'  '+infoSalah:'');
+    bunyiSalah();
+  }
+  $('btnSeterus').textContent = (sesi.idx+1>=sesi.soal.length) ? 'Tamat 🎊' : 'Seterusnya ➡️';
+}
+
+function jawab(i,btn){
+  if(sesi.dijwp)return;
+  const s=sesi.soal[sesi.idx];
+  [...$('pilihan').children].forEach(o=>o.disabled=true);
+  if(i===s.jwp){ btn.classList.add('betul'); tunjukKeputusan(true); }
+  else{
+    btn.classList.add('salah');
+    $('pilihan').children[s.jwp].classList.add('kunci');
+    tunjukKeputusan(false,'Jawapannya: '+s.pilihan[s.jwp]);
+  }
+}
+
+/* ---------- Padankan ---------- */
+function renderPadan(s){
+  sesi.padanKiri=null; sesi.padanSiap=0;
+  const kiri=s.pairs.map((p,i)=>({...p,i}));
+  const kanan=kacau(s.pairs.map((p,i)=>({label:p.j, i})));
+  let h=`<div class="padan-arahan">Tekan gambar, kemudian tekan perkataan yang sepadan.</div>`;
+  h+=`<div class="padan-grid"><div class="padan-col" id="padanKiri"></div><div class="padan-col" id="padanKanan"></div></div>`;
+  $('paparan').innerHTML=h;
+  const kiriBox=$('padanKiri'), kananBox=$('padanKanan');
+  kiri.forEach(o=>{
+    const b=document.createElement('button'); b.className='padan-item'; b.dataset.i=o.i;
+    b.innerHTML = o.gambar ? `<span class="padan-em">${o.gambar}</span>` : o.k;
+    b.onclick=()=>tapKiri(b); kiriBox.appendChild(b);
+  });
+  kanan.forEach(o=>{
+    const b=document.createElement('button'); b.className='padan-item padan-teks'+(adaArab(o.label)?' opsi-arab':''); b.dataset.i=o.i;
+    b.textContent=o.label; b.onclick=()=>tapKanan(b); kananBox.appendChild(b);
+  });
+}
+function tapKiri(b){
+  if(sesi.dijwp || b.classList.contains('lock'))return;
+  document.querySelectorAll('#padanKiri .padan-item').forEach(x=>x.classList.remove('pilih'));
+  sesi.padanKiri=b; b.classList.add('pilih');
+}
+function tapKanan(b){
+  if(sesi.dijwp || b.classList.contains('lock'))return;
+  if(!sesi.padanKiri){ b.classList.add('goyang'); setTimeout(()=>b.classList.remove('goyang'),400); return; }
+  const kiri=sesi.padanKiri;
+  if(kiri.dataset.i===b.dataset.i){
+    kiri.classList.remove('pilih'); kiri.classList.add('lock'); b.classList.add('lock');
+    sesi.padanKiri=null; sesi.padanSiap++; nada([700,950]);
+    if(sesi.padanSiap===sesi.soal[sesi.idx].pairs.length) tunjukKeputusan(true);
+  }else{
+    b.classList.add('silap'); kiri.classList.add('silap'); bunyiSalah();
+    const k=kiri; setTimeout(()=>{k.classList.remove('silap','pilih'); b.classList.remove('silap');},500);
+    sesi.padanKiri=null;
+  }
+}
+
+/* ---------- Susun ayat ---------- */
+function renderSusun(s){
+  sesi.susunPilih=[];
+  const acak=kacau(s.kata.map((w,i)=>({w,i})));
+  let h='';
+  if(s.arab) h+=`<div class="papar-arab">${s.arab}</div>`;
+  if(s.em) h+=`<div class="papar-em">${s.em}</div>`;
+  if(s.teks) h+=`<div class="soalan-teks" style="font-size:19px">${s.teks}</div>`;
+  h+=`<div class="susun-jwp" id="susunJwp"><span class="susun-hint">Tekan perkataan di bawah ikut urutan…</span></div>`;
+  h+=`<div class="susun-bank" id="susunBank"></div>`;
+  h+=`<div id="susunNota" class="susun-nota"></div>`;
+  h+=`<button class="btn btn-amber susun-semak" id="susunSemak" onclick="semakSusun()">✅ Semak Ayat</button>`;
+  $('paparan').innerHTML=h;
+  const bank=$('susunBank');
+  acak.forEach(o=>{
+    const b=document.createElement('button'); b.className='tile'; b.textContent=o.w;
+    b.onclick=()=>pilihTile(b,o.w); bank.appendChild(b);
+  });
+}
+function pilihTile(b,word){
+  if(sesi.dijwp || b.classList.contains('guna'))return;
+  b.classList.add('guna');
+  const jwp=$('susunJwp'); const hint=jwp.querySelector('.susun-hint'); if(hint)hint.remove();
+  const t=document.createElement('button'); t.className='tile tile-jwp'; t.textContent=word;
+  const entri={word,b,t};
+  t.onclick=()=>{
+    if(sesi.dijwp)return;
+    t.remove(); b.classList.remove('guna');
+    sesi.susunPilih=sesi.susunPilih.filter(x=>x!==entri);
+    if(!jwp.children.length)jwp.innerHTML='<span class="susun-hint">Tekan perkataan di bawah ikut urutan…</span>';
+  };
+  jwp.appendChild(t); sesi.susunPilih.push(entri);
+}
+function semakSusun(){
+  if(sesi.dijwp)return;
+  const s=sesi.soal[sesi.idx];
+  if(sesi.susunPilih.length<s.kata.length){
+    const n=$('susunNota'); n.textContent='Tekan semua perkataan dahulu ya! 😊';
+    n.classList.add('lihat'); setTimeout(()=>n.classList.remove('lihat'),1600);
+    return;
+  }
+  const jwp=sesi.susunPilih.map(x=>x.word).join(' ');
+  $('susunSemak').disabled=true;
+  if(jwp===s.kata.join(' ')){ $('susunJwp').classList.add('betul'); tunjukKeputusan(true); }
+  else{ $('susunJwp').classList.add('salah'); tunjukKeputusan(false,'Ayat yang betul: '+s.kata.join(' ')); }
+}
+
+function soalanSeterus(){
+  sesi.idx++;
+  if(sesi.idx>=sesi.soal.length){ tamatSesi(); return; }
+  renderSoalan();
+}
+
+function tamatSesi(){
+  $('progresBar').style.width='100%';
+  const jum=sesi.soal.length, betul=sesi.betul, peratus=betul/jum;
+  $('skorBetul').textContent=betul; $('skorJumlah').textContent=jum;
+  let b=1; if(peratus>=0.6)b=2; if(peratus>=0.9)b=3;
+  $('bintangBaris').textContent='⭐'.repeat(b)+'☆'.repeat(3-b);
+  let raut='🌟',tajuk='Hebat!',ucap='';
+  if(peratus>=0.9){raut='🏆';tajuk='Cemerlang!';ucap='MasyaAllah, anak hebat! Hampir semua betul!';}
+  else if(peratus>=0.6){raut='🌟';tajuk='Bagus!';ucap='Bagus! Teruskan berlatih ya!';}
+  else{raut='🌱';tajuk='Jom Cuba Lagi!';ucap='Tak mengapa, latihan buat kita pandai!';}
+  $('rautTamat').textContent=raut; $('tajukTamat').textContent=tajuk; $('ucapTamat').textContent=ucap;
+  if(sesi.meta && sesi.meta.modul){
+    if(rekod['__modul__']==null || betul>rekod['__modul__']){ rekod['__modul__']=betul; simpanRekod(rekod); }
+  }else if(sesi.meta && sesi.meta.sumber && sesi.meta.sumber.length===1){
+    const id=sesi.meta.sumber[0];
+    if(rekod[id]==null || betul>rekod[id]){ rekod[id]=betul; simpanRekod(rekod); }
+  }
+  if(peratus>=0.9)setTimeout(()=>nada([784,988,1175,1568],0.13),150);
+  tunjuk('skrinTamat');
+}
+
+function ulangLatihan(){
+  const meta=sesi.meta;
+  if(meta.modul){ mulaModul(); return; }
+  if(meta.sumber===null){ latihanPantas(); return; }
+  let soal=[];
+  meta.sumber.forEach(id=>{ const l=cariLatihan(id);
+    l.soalan.forEach(s=>soal.push({...s,arahan:s.arahan||l.arahan,petikan:l.petikan})); });
+  mulaSesi(soal,meta);
+}
+
+function tanyaBerhenti(){
+  if(sesi && sesi.idx>0 && sesi.idx<sesi.soal.length){ if(!confirm('Berhenti latihan ini?'))return; }
+  if(modMulti){ tunjuk('skrinPilih'); } else { keMula(); }
+}
+
+function togolBunyi(){
+  bunyiOn=!bunyiOn;
+  try{localStorage.setItem('pi_t1_bunyi',bunyiOn?'on':'off')}catch(e){}
+  $('togolBunyi').textContent=bunyiOn?'🔊 Bunyi: Buka':'🔇 Bunyi: Tutup';
+  if(bunyiOn)bunyiBetul();
+}
+$('togolBunyi').textContent=bunyiOn?'🔊 Bunyi: Buka':'🔇 Bunyi: Tutup';
+
+document.addEventListener('gesturestart',e=>e.preventDefault());
+</script>
+</body>
+</html>
